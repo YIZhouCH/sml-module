@@ -44,5 +44,16 @@
 			</resource>
 		</resources>
 	</build>
-
+	<distributionManagement>
+		<snapshotRepository>
+			<id>hw</id>
+			<name>hw-snapshots</name>
+			<url>http://23.247.25.117:8081/nexus/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>hw</id>
+			<name>hw-releases</name>
+			<url>http://23.247.25.117:8081/nexus/content/repositories/releases</url>
+		</repository>
+	</distributionManagement>
 </project>
