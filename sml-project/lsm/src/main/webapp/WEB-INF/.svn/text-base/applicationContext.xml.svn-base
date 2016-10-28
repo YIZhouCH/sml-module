@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+							http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<context:component-scan base-package="com.eastcom_sw.inas">
+		 <context:include-filter type="annotation"
+			expression="javax.ws.rs.ext.Provider" />
+	</context:component-scan> 
+	<import resource="redis.xml" />
+	<import resource="db.xml" />
+	<import resource="beans.xml" />
+	<!--  <import resource="scheduler.xml" />-->
+	
+	<bean id="reportCommonService" class="com.eastcom_sw.inas.core.service.report.ReportCommonService" init-method="init">
+		<property name="cacheManager" ref="cacheManager"/>
+		<property name="dss">
+			<map>
+				<entry key="defJt" value-ref="dataSource-ipmsdm"></entry>
+				<entry key="ipmsdm-old" value-ref="def_dataSource"></entry>
+				<entry key="inas" value-ref="inas_dataSource"></entry>
+				<entry key="ipnet" value-ref="ipnet_dataSource"></entry>
+				<entry key="ipmsds" value-ref="dataSource-ipmsds"></entry>
+				<entry key="ipmsdw" value-ref="dataSource-ipmsdw"></entry>
+				<entry key="ipmsdm" value-ref="dataSource-ipmsdm"></entry>
+			</map>
+		</property>
+	</bean>
+	
+	<!--<bean id="cacheManager" class="com.eastcom_sw.inas.core.service.support.cache.DefaultCacheManager"/> -->
+	<bean id="cacheManager" class="com.eastcom_sw.inas.rest.RedisCacheManager">
+		<property name="cachePre" value="inas:services:"/>
+		<property name="redisTemplate" ref="redisTemplate"/>
+	</bean>
+	<bean id="jsonMapper" class="com.eastcom_sw.inas.rest.FastJsonMapper"/>
+	<bean id="el" class="com.eastcom_sw.inas.core.service.support.el.JsEl"/>
+	
+	<bean id="jdbcFTemplate" class="com.eastcom_sw.inas.core.service.jdbc.JdbcFTemplate" init-method="init">
+		<property name="jsonMapper" ref="jsonMapper"/>
+		<property name="cacheManager" ref="cacheManager"/>
+		<property name="el" value="#{el}"></property>
+		<property name="dss">
+			<map>
+				<entry key="defJt" value-ref="dataSource-ipmsdm"></entry>
+				<entry key="ipmsdm-old" value-ref="def_dataSource"></entry>
+				<entry key="inas" value-ref="inas_dataSource"></entry>
+				<entry key="ipnet" value-ref="ipnet_dataSource"></entry>
+				<entry key="ipmsds" value-ref="dataSource-ipmsds"></entry>
+				<entry key="ipmsdw" value-ref="dataSource-ipmsdw"></entry>
+				<entry key="ipmsdm" value-ref="dataSource-ipmsdm"></entry>
+				<entry key="sb" value-ref="sb_dataSource"></entry>
+			</map>
+		</property>
+	</bean>
+
+</beans>

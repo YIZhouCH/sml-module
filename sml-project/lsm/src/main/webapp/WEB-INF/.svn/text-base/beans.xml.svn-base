@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/context
+         http://www.springframework.org/schema/context/spring-context.xsd
+         http://www.springframework.org/schema/aop
+         http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<bean id="def_dataSource" class="com.eastcom_sw.inas.system.XBasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		<property name="url" value="jdbc:oracle:thin:@10.221.247.48:1521/ipms" />
+		<property name="username" value="IPMSDM" />
+		<property name="password" value="SHipmsdm!23$" />
+		<property name="initialSize" value="2" />
+		<property name="maxActive" value="20" />
+		<property name="maxIdle" value="20" />
+		<property name="maxWait" value="2000" />
+		<property name="removeAbandoned">
+			<value>true</value>
+		</property>
+		<property name="removeAbandonedTimeout">
+			<value>180</value>
+		</property>
+		<property name="testWhileIdle">
+			<value>true</value>
+		</property>
+		<property name="testOnBorrow">
+			<value>false</value>
+		</property>
+		<property name="testOnReturn">
+			<value>false</value>
+		</property>
+		<property name="validationQuery">
+			<value>select sysdate from dual</value>
+		</property>
+		<property name="validationQueryTimeout">
+			<value>1</value>
+		</property>
+		<property name="timeBetweenEvictionRunsMillis">
+			<value>30000</value>
+		</property>
+		<property name="numTestsPerEvictionRun">
+			<value>20</value>
+		</property>
+	</bean>
+
+	<bean id="defJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="def_dataSource" />
+	</bean>
+	
+	<bean id="def_transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="def_dataSource" />
+	</bean>
+
+
+	<bean id="def_sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="def_dataSource" />
+		<property name="plugins">
+			<bean class="com.github.miemiedev.mybatis.paginator.OffsetLimitInterceptor">
+				<property name="dialect">
+					<bean
+						class="com.github.miemiedev.mybatis.paginator.dialect.OracleDialect"></bean>
+				</property>
+			</bean>
+		</property>
+		<property name="mapperLocations">
+			<array>
+				<value>classpath:com/eastcom_sw/inas/core/mapper/conf/*.xml</value>
+				<value>classpath:com/eastcom_sw/inas/core/mapper/url/*.xml</value>
+				<value>classpath:com/eastcom_sw/inas/core/mapper/permission/*.xml
+				</value>
+			</array>
+		</property>
+	</bean>
+
+
+	<bean id="def_sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate"
+		destroy-method="clearCache">
+		<constructor-arg ref="def_sqlSessionFactory" />
+	</bean>
+
+	<bean id="inas_dataSource" class="com.eastcom_sw.inas.system.XBasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="com.sybase.jdbc3.jdbc.SybDriver" />
+		<property name="url" value="jdbc:sybase:Tds:10.221.247.10:8888/ipms" />
+		<property name="username" value="inas" />
+		<property name="password" value="SHinas!23$" />
+		<property name="initialSize" value="10" />
+		<property name="maxActive" value="20" />
+		<property name="maxIdle" value="20" />
+		<property name="maxWait" value="2000" />
+		<property name="removeAbandoned">
+			<value>true</value>
+		</property>
+		<property name="removeAbandonedTimeout">
+			<value>180</value>
+		</property>
+		<property name="testWhileIdle">
+			<value>true</value>
+		</property>
+		<property name="testOnBorrow">
+			<value>false</value>
+		</property>
+		<property name="testOnReturn">
+			<value>false</value>
+		</property>
+		<property name="validationQuery">
+			<value>select 1</value>
+		</property>
+		<property name="validationQueryTimeout">
+			<value>1</value>
+		</property>
+		<property name="timeBetweenEvictionRunsMillis">
+			<value>30000</value>
+		</property>
+		<property name="numTestsPerEvictionRun">
+			<value>20</value>
+		</property>
+	</bean>
+	
+	<bean id="ipnet_dataSource" class="com.eastcom_sw.inas.system.XBasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		<property name="url" value="jdbc:oracle:thin:@10.221.18.39:1521:ipnet" />
+		<property name="username" value="ipnet" />
+		<property name="password" value="SHipnet!23$" />
+		<property name="initialSize" value="10" />
+		<property name="maxActive" value="20" />
+		<property name="maxIdle" value="20" />
+		<property name="maxWait" value="2000" />
+		<property name="removeAbandoned">
+			<value>true</value>
+		</property>
+		<property name="removeAbandonedTimeout">
+			<value>180</value>
+		</property>
+		<property name="testWhileIdle">
+			<value>true</value>
+		</property>
+		<property name="testOnBorrow">
+			<value>false</value>
+		</property>
+		<property name="testOnReturn">
+			<value>false</value>
+		</property>
+		<property name="validationQuery">
+			<value>select 1 from dual</value>
+		</property>
+		<property name="validationQueryTimeout">
+			<value>1</value>
+		</property>
+		<property name="timeBetweenEvictionRunsMillis">
+			<value>30000</value>
+		</property>
+		<property name="numTestsPerEvictionRun">
+			<value>20</value>
+		</property>
+	</bean>
+
+	
+	<bean id="inas_transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="inas_dataSource" />
+	</bean>
+
+
+
+	<bean id="inas_sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="inas_dataSource" />
+		<property name="plugins">
+			<bean class="com.github.miemiedev.mybatis.paginator.OffsetLimitInterceptor">
+				<property name="dialect">
+					<bean class="com.eastcom_sw.inas.core.dao.page.SybaseIQDialect"></bean>
+				</property>
+			</bean>
+		</property>
+		<property name="mapperLocations">
+			<array>
+				<value>classpath:com/eastcom_sw/inas/core/mapper/inas/*.xml</value>
+				<value>classpath:com/eastcom_sw/inas/core/mapper/holiday/*.xml
+				</value>
+			</array>
+		</property>
+	</bean>
+
+
+	<bean id="inas_sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate"
+		destroy-method="clearCache">
+		<constructor-arg ref="inas_sqlSessionFactory" />
+	</bean>
+
+
+
+	<bean id="sb_dataSource" class="com.eastcom_sw.inas.system.XBasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="com.sybase.jdbc3.jdbc.SybDriver" />
+		<property name="url" value="jdbc:sybase:Tds:10.221.32.124:4100" />
+		<property name="username" value="ecis" />
+		<property name="password" value="ecis!23$" />
+		<property name="initialSize" value="10" />
+		<property name="maxActive" value="20" />
+		<property name="maxIdle" value="20" />
+		<property name="maxWait" value="2000" />
+		<property name="removeAbandoned">
+			<value>true</value>
+		</property>
+		<property name="removeAbandonedTimeout">
+			<value>180</value>
+		</property>
+		<property name="testWhileIdle">
+			<value>true</value>
+		</property>
+		<property name="testOnBorrow">
+			<value>false</value>
+		</property>
+		<property name="testOnReturn">
+			<value>false</value>
+		</property>
+		<property name="validationQuery">
+			<value>select 1</value>
+		</property>
+		<property name="validationQueryTimeout">
+			<value>1</value>
+		</property>
+		<property name="timeBetweenEvictionRunsMillis">
+			<value>30000</value>
+		</property>
+		<property name="numTestsPerEvictionRun">
+			<value>20</value>
+		</property>
+	</bean>
+    
+    
+	<bean id="sb_transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="sb_dataSource" />
+	</bean>
+
+
+
+	<bean id="sb_sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="sb_dataSource" />
+		<property name="plugins">
+			<bean class="com.github.miemiedev.mybatis.paginator.OffsetLimitInterceptor">
+				<property name="dialect">
+					<bean class="com.eastcom_sw.inas.core.dao.page.SybaseIQDialect"></bean>
+				</property>
+			</bean>
+		</property>
+		<property name="mapperLocations">
+			<array>
+				<value>classpath:com/eastcom_sw/inas/core/mapper/sb/*.xml</value>
+			</array>
+		</property>
+	</bean>
+
+
+	<bean id="sb_sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate"
+		destroy-method="clearCache">
+		<constructor-arg ref="sb_sqlSessionFactory" />
+	</bean>
+
+	<!-- jk -->
+
+	<bean id="jk_dataSource" class="com.eastcom_sw.inas.system.XBasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		<property name="url" value="jdbc:oracle:thin:@10.221.235.70:1521:shjk" />
+		<property name="username" value="jkrm" />
+		<property name="password" value="SHjkrm!23$" />
+		<property name="initialSize" value="2" />
+		<property name="maxActive" value="20" />
+		<property name="maxIdle" value="20" />
+		<property name="maxWait" value="2000" />
+		<property name="removeAbandoned">
+			<value>true</value>
+		</property>
+		<property name="removeAbandonedTimeout">
+			<value>180</value>
+		</property>
+		<property name="testWhileIdle">
+			<value>true</value>
+		</property>
+		<property name="testOnBorrow">
+			<value>false</value>
+		</property>
+		<property name="testOnReturn">
+			<value>false</value>
+		</property>
+		<property name="validationQuery">
+			<value>select sysdate from dual</value>
+		</property>
+		<property name="validationQueryTimeout">
+			<value>1</value>
+		</property>
+		<property name="timeBetweenEvictionRunsMillis">
+			<value>30000</value>
+		</property>
+		<property name="numTestsPerEvictionRun">
+			<value>20</value>
+		</property>
+	</bean>
+
+
+	<bean id="jk_transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="jk_dataSource" />
+	</bean>
+
+	<bean id="jk_sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="jk_dataSource" />
+		<property name="plugins">
+			<bean class="com.github.miemiedev.mybatis.paginator.OffsetLimitInterceptor">
+				<property name="dialect">
+					<bean
+						class="com.github.miemiedev.mybatis.paginator.dialect.OracleDialect"></bean>
+				</property>
+			</bean>
+		</property>
+		<property name="mapperLocations">
+			<array>
+				<value>classpath:com/eastcom_sw/inas/core/mapper/jk/*.xml</value>
+			</array>
+		</property>
+	</bean>
+
+	<bean id="jk_sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate"
+		destroy-method="clearCache">
+		<constructor-arg ref="jk_sqlSessionFactory" />
+	</bean>
+
+
+	<bean id="commonConfiger" class="com.eastcom_sw.inas.common.exportUtil.CommonConfiger">
+		<property name="fileTempPath"
+			value="\home\ipms\tomcat_web\webapps\services\WEB-INF\TEMP" />
+		<property name="smsPostUrl"
+			value="http://10.221.247.7:8080/inasSmsService/rest/sms" />
+		<property name="hbaseUrl"
+			value="http://10.221.247.7:19080/dpiservice/" />
+	</bean>
+	
+</beans>

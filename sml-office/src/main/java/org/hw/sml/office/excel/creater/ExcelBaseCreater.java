@@ -1,6 +1,5 @@
 package org.hw.sml.office.excel.creater;
 
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.Map;
@@ -12,7 +11,6 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.hw.sml.office.excel.ExcelBase;
 import org.hw.sml.office.excel.Retriver;
-import org.hw.sml.office.excel.parser.StypeParser;
 import org.hw.sml.tools.MapUtils;
 import org.hw.sml.tools.Maps;
 
@@ -47,7 +45,7 @@ public abstract class ExcelBaseCreater extends ExcelBase{
 		}
 		if(!type.equals(Type.csv)){
 		//
-			StypeParser stypeParser=new StypeParser();
+			/*StypeParser stypeParser=new StypeParser();
 			if(modelpath==null){
 				if(type.equals(Type.xls)){
 					stypeParser.setType(Type.xls);
@@ -65,7 +63,7 @@ public abstract class ExcelBaseCreater extends ExcelBase{
 			stypeParser.init();
 			stypeParser.setHeadNames(new String[]{"key","cellStype"});
 			stypeParser.execute();
-			styles=MapUtils.groupMpSingle(stypeParser.getDatas(),"key");
+			styles=MapUtils.groupMpSingle(stypeParser.getDatas(),"key");*/
 		}else{
 			
 		}

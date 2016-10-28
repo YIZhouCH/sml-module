@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/context
+         http://www.springframework.org/schema/context/spring-context.xsd
+         http://www.springframework.org/schema/aop
+         http://www.springframework.org/schema/aop/spring-aop.xsd">
+	<bean id="dataSource-ipmsds" class="com.eastcom_sw.inas.system.XBasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		<property name="url" value="jdbc:oracle:thin:@10.221.247.48:1521/ipms" />
+		<property name="username" value="IPMSDS" />
+		<property name="password" value="SHipmsds!23$" />
+		<property name="initialSize" value="1" />
+		<property name="maxActive" value="20" />
+		<property name="maxIdle" value="20" />
+		<property name="maxWait" value="2000" />
+		<property name="removeAbandoned">
+			<value>true</value>
+		</property>
+		<property name="removeAbandonedTimeout">
+			<value>180</value>
+		</property>
+		<property name="testWhileIdle">
+			<value>true</value>
+		</property>
+		<property name="testOnBorrow">
+			<value>false</value>
+		</property>
+		<property name="testOnReturn">
+			<value>false</value>
+		</property>
+		<property name="validationQuery">
+			<value>select sysdate from dual</value>
+		</property>
+		<property name="validationQueryTimeout">
+			<value>1</value>
+		</property>
+		<property name="timeBetweenEvictionRunsMillis">
+			<value>30000</value>
+		</property>
+		<property name="numTestsPerEvictionRun">
+			<value>20</value>
+		</property>
+	</bean>
+
+	
+	<bean id="dataSource-ipmsdw" class="com.eastcom_sw.inas.system.XBasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		<property name="url" value="jdbc:oracle:thin:@10.221.247.48:1521/ipms" />
+		<property name="username" value="IPMSDW" />
+		<property name="password" value="SHipmsdw!23$" />
+		<property name="initialSize" value="1" />
+		<property name="maxActive" value="20" />
+		<property name="maxIdle" value="20" />
+		<property name="maxWait" value="2000" />
+		<property name="removeAbandoned">
+			<value>true</value>
+		</property>
+		<property name="removeAbandonedTimeout">
+			<value>180</value>
+		</property>
+		<property name="testWhileIdle">
+			<value>true</value>
+		</property>
+		<property name="testOnBorrow">
+			<value>false</value>
+		</property>
+		<property name="testOnReturn">
+			<value>false</value>
+		</property>
+		<property name="validationQuery">
+			<value>select sysdate from dual</value>
+		</property>
+		<property name="validationQueryTimeout">
+			<value>1</value>
+		</property>
+		<property name="timeBetweenEvictionRunsMillis">
+			<value>30000</value>
+		</property>
+		<property name="numTestsPerEvictionRun">
+			<value>20</value>
+		</property>
+	</bean>
+	
+	<bean id="dataSource-ipmsdm" class="com.eastcom_sw.inas.system.XBasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		<property name="url" value="jdbc:oracle:thin:@10.221.247.48:1521/ipms" />
+		<property name="username" value="IPMSDM" />
+		<property name="password" value="SHipmsdm!23$" />
+		<property name="initialSize" value="1" />
+		<property name="maxActive" value="20" />
+		<property name="maxIdle" value="20" />
+		<property name="maxWait" value="2000" />
+		<property name="removeAbandoned">
+			<value>true</value>
+		</property>
+		<property name="removeAbandonedTimeout">
+			<value>180</value>
+		</property>
+		<property name="testWhileIdle">
+			<value>true</value>
+		</property>
+		<property name="testOnBorrow">
+			<value>false</value>
+		</property>
+		<property name="testOnReturn">
+			<value>false</value>
+		</property>
+		<property name="validationQuery">
+			<value>select sysdate from dual</value>
+		</property>
+		<property name="validationQueryTimeout">
+			<value>1</value>
+		</property>
+		<property name="timeBetweenEvictionRunsMillis">
+			<value>30000</value>
+		</property>
+		<property name="numTestsPerEvictionRun">
+			<value>20</value>
+		</property>
+	</bean>
+
+	
+	
+	
+</beans>

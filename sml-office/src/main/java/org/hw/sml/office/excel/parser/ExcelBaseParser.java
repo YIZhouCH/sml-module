@@ -18,7 +18,7 @@ public abstract class ExcelBaseParser extends ExcelBase{
 	
 	public void init() throws Exception{
 		verified();
-		if(inputStream==null){
+		if(inputStream==null&&filename!=null){
 			inputStream=new FileInputStream(filename);
 			if(filename.toLowerCase().endsWith("xls")){
 				type=Type.xls;
@@ -28,7 +28,7 @@ public abstract class ExcelBaseParser extends ExcelBase{
 	public  void verified()throws Exception{
 		try {
 			if(inputStream==null&&filename==null){
-				throw new Exception("verified[target filename and inputstream is null]");
+				//throw new Exception("verified[target filename and inputstream is null]");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

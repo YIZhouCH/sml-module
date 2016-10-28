@@ -147,7 +147,7 @@ public class CrudBaseController extends RcptBaseController{
 		}else if(exportType.equals(Type.csv)){
 			excel=new ExcelCsvCreater();
 		}else{
-			excel=new Excel03Creater();
+			excel=new Excel07Creater();
 		}
 		excel.setHeadNames(ht.hns);
 		excel.setPropertyNames(ht.pns);
