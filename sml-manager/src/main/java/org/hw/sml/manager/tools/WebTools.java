@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.hw.sml.tools.MapUtils;
+import org.hw.sml.tools.Maps;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -174,7 +175,53 @@ public static final ObjectMapper om=new ObjectMapper();
 	        }
 		return rtn;
 	}
+	public static String formatJson(String jsonStr) {
+        if (null == jsonStr || "".equals(jsonStr)) return "";
+        StringBuilder sb = new StringBuilder();
+        char last = '\0';
+        char current = '\0';
+        int indent = 0;
+        for (int i = 0; i < jsonStr.length(); i++) {
+            last = current;
+            current = jsonStr.charAt(i);
+            switch (current) {
+                case '{':
+                case '[':
+                    sb.append(current);
+                    sb.append('\n');
+                    indent++;
+                    addIndentBlank(sb, indent);
+                    break;
+                case '}':
+                case ']':
+                    sb.append('\n');
+                    indent--;
+                    addIndentBlank(sb, indent);
+                    sb.append(current);
+                    break;
+                case ',':
+                    sb.append(current);
+                    if (last != '\\') {
+                        sb.append('\n');
+                        addIndentBlank(sb, indent);
+                    }
+                    break;
+                default:
+                    sb.append(current);
+            }
+        }
+        return sb.toString();
+	}
+    private static void addIndentBlank(StringBuilder sb, int indent) {
+            for (int i = 0; i < indent; i++) {
+                sb.append('\t');
+          }
+     }
 	public static void main(String[] args) {
-		System.out.println(Arrays.asList(getUris("/3/4/5/6/7/8")));
+		Map map=new Maps<String,Object>().put("a","b").put("c",new Maps<String,Object>().put("d",'e').getMap()).getMap();
+		Map<String,Object> result=MapUtils.newLinkedHashMap();
+		result.put("f",map);
+		result.put("g",Arrays.asList(map,map,map));
+		System.out.println(formatJson(toJson(result)));
 	}
 }

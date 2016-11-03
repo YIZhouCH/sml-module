@@ -45,12 +45,13 @@ public class SmlManageService extends RcptBaseService{
 			}else if(updateStatus.equals("adu")){
 				result=super.adu(update);
 			}else{
-				throw new Exception("uri error ["+updateStatus+"].");
+				Map<String,String> params=WebTools.fromJson(requestBody,Map.class);
+				result=super.update(updateStatus, params);
 			}
 			WebTools.print(response,WebTools.buildResult(true,"success", result));
 		}catch(Exception e){
 			e.printStackTrace();
-			WebTools.print(response,WebTools.buildResult(false,"success", e.getMessage()));
+			WebTools.print(response,WebTools.buildResult(false,e.getMessage(),null));
 		}
 	}
 	/**
