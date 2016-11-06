@@ -5,16 +5,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.hw.sml.core.SqlMarkupAbstractTemplate;
+import org.hw.sml.jdbc.JdbcTemplate;
 import org.hw.sml.model.Result;
 import org.hw.sml.report.model.Constants;
 import org.hw.sml.report.model.Update;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+
 
 public class RcptBaseService {
 	
 	@Autowired
-	private SqlMarkupAbstractTemplate sqlMarkupTemplate;
+	protected SqlMarkupAbstractTemplate sqlMarkupTemplate;
 	
 	protected String mark="";
 	
