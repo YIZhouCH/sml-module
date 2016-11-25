@@ -222,6 +222,10 @@ public static final ObjectMapper om=new ObjectMapper();
 		Map<String,Object> result=MapUtils.newLinkedHashMap();
 		result.put("f",map);
 		result.put("g",Arrays.asList(map,map,map));
-		System.out.println(formatJson(toJson(result)));
+		Map<Object,Object> rrr=MapUtils.newConcurrentHashMap();
+		rrr.put("aaaa",map);
+		rrr.put("result",result);
+		rrr.put("e",Arrays.asList(result,map,result));
+		System.out.println(formatJson(toJson(rrr)));
 	}
 }
