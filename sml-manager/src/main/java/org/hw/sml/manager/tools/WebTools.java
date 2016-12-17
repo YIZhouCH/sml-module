@@ -17,17 +17,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.hw.sml.tools.MapUtils;
 import org.hw.sml.tools.Maps;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
+import com.alibaba.fastjson.JSON;
 
 public class WebTools {
-public static final ObjectMapper om=new ObjectMapper();
-	
-	public static final Gson gson=new Gson();
-	
 	/**
 	 * 输出到界面
 	 * @param response
@@ -59,34 +51,16 @@ public static final ObjectMapper om=new ObjectMapper();
 		return returnResult;
 	}
 	public static String toJson(Object obj){
-		try {
-			return om.writeValueAsString(obj);
-		} catch (JsonGenerationException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+		return JSON.toJSONString(obj);
 	}
 	public static String toGson(Object obj){
-		return gson.toJson(obj);
+		return toJson(obj);
 	}
 	public static <T> T fromGson(String json,Class<T> t){
-		return gson.fromJson(json, t);
+		return fromJson(json, t);
 	}
 	public static <T> T fromJson(String json,Class<T> t){
-		try {
-			return om.readValue(json, t);
-		} catch (JsonParseException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+		return JSON.parseObject(json, t);
 	}
 	/**
 	 * jqgrid插件查询

@@ -2,6 +2,7 @@ package org.hw.sml.manager;
 
 import java.io.IOException;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -9,21 +10,22 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.hw.sml.manager.service.SmlManageService;
 import org.hw.sml.manager.tools.WebTools;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.hw.sml.support.LoggerHelper;
+import org.hw.sml.support.ioc.BeanHelper;
 
 
 public class SmlServlet extends HttpServlet{
-	public static final Logger logger=LoggerFactory.getLogger(SmlServlet.class);
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -3935032917542953086L;
 	
 	private  String   postCharset = "UTF-8";
-
+	public void init() throws ServletException  {
+		super.init();
+		BeanHelper.start();
+	}
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -32,7 +34,7 @@ public class SmlServlet extends HttpServlet{
 		 request.setCharacterEncoding(this.postCharset);
 		 String method=request.getMethod();
 		 String uri=request.getRequestURI();
-		 logger.debug("sml request method[{}]-uri[{}]",method,uri);
+		 LoggerHelper.debug(getClass(),"sml request method["+method+"]-uri["+uri+"]");
 		 String[] uris=WebTools.getUris(uri);
 		 //2开始
 		 if(uris.length<4){
@@ -41,8 +43,7 @@ public class SmlServlet extends HttpServlet{
 		 }
 		 String operater=uris[2];
 		 String mark=uris[3];
-		 WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-		 SmlManageService smlManageService=wac.getBean(SmlManageService.class);
+		 SmlManageService smlManageService=BeanHelper.getBean("smlManageService");
 		 if(smlManageService==null){
 			 WebTools.print(response,WebTools.buildResult(false,"bean[smlManageService] not exists!",null));
 			 return;

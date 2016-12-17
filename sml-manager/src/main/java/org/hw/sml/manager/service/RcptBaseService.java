@@ -9,12 +9,10 @@ import org.hw.sml.jdbc.JdbcTemplate;
 import org.hw.sml.model.Result;
 import org.hw.sml.report.model.Constants;
 import org.hw.sml.report.model.Update;
-import org.springframework.beans.factory.annotation.Autowired;
 
 
 public class RcptBaseService {
 	
-	@Autowired
 	protected SqlMarkupAbstractTemplate sqlMarkupTemplate;
 	
 	protected String mark="";

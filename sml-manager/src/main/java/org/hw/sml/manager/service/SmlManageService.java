@@ -6,19 +6,18 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hw.sml.manager.annotation.SmlResource;
 import org.hw.sml.manager.model.PageObject;
 import org.hw.sml.manager.tools.WebTools;
 import org.hw.sml.model.Result;
 import org.hw.sml.report.model.Update;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.hw.sml.support.ioc.BeanHelper;
+
 /**
  * 用传统servlet发布资源
  * @author wen
  *
  */
-//@SmlResource
+
 public class SmlManageService extends RcptBaseService{
 
 	/**
@@ -108,15 +107,9 @@ public class SmlManageService extends RcptBaseService{
 	 * @param response
 	 */
 	public void invoke(String mark,HttpServletRequest request,HttpServletResponse response){
-		WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getSession().getServletContext());
-		Object invokeBean=wac.getBean(mark);
+		Object invokeBean=BeanHelper.getBean(mark);
 		if(invokeBean==null){
 			 WebTools.print(response,WebTools.buildResult(false,"bean["+mark+"] not exists!",null));
-			 return;
-		}
-		SmlResource smlResource=invokeBean.getClass().getAnnotation(SmlResource.class);
-		if(smlResource==null){
-			WebTools.print(response,WebTools.buildResult(false,"bean["+mark+"] not support[@SmlResource]!",null));
 			 return;
 		}
 		String[] uris=WebTools.getUris(request.getRequestURI());
@@ -139,9 +132,6 @@ public class SmlManageService extends RcptBaseService{
 			e.printStackTrace();
 		} 
 	}
-	public static void main(String[] args) {
-		SmlResource smlResource=SmlManageService.class.getAnnotation(SmlResource.class);
-		System.out.println(smlResource.name().equals(""));
-	}
+
 	
 }
