@@ -31,8 +31,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 
-
-
 public class CrudBaseController extends RcptBaseController{
 	public static final Logger logger=LoggerFactory.getLogger(CrudBaseController.class);
 	
@@ -147,7 +145,7 @@ public class CrudBaseController extends RcptBaseController{
 		}else if(exportType.equals(Type.csv)){
 			excel=new ExcelCsvCreater();
 		}else{
-			excel=new Excel07Creater();
+			excel=new Excel03Creater();
 		}
 		excel.setHeadNames(ht.hns);
 		excel.setPropertyNames(ht.pns);
@@ -175,10 +173,7 @@ public class CrudBaseController extends RcptBaseController{
 				}
 			}
 		});
-		String rtn=WebTools.getContentDisposition(title+"."+excel.getType().name(),userAgent);
-		response.setHeader("Content-Disposition","attachment;" + rtn);
-		response.setHeader("Connection", "close");
-		response.setHeader("Content-Type", "application/octet-stream");
+		WebTools.exportPreDone(title+"."+excel.getType().name(), userAgent, response);
 		OutputStream os = response.getOutputStream();
 		excel.setOutputStream(os);
 		excel.init();
@@ -256,10 +251,7 @@ public class CrudBaseController extends RcptBaseController{
 		}else{//直接使用前台传入的结果数据导出
 			excel.setDatas(datas);
 		}
-		String rtn=WebTools.getContentDisposition(title+"."+excel.getType().name(),userAgent);
-		response.setHeader("Content-Disposition","attachment;" + rtn);
-		response.setHeader("Connection", "close");
-		response.setHeader("Content-Type", "application/octet-stream");
+		WebTools.exportPreDone(title+"."+excel.getType().name(), userAgent, response);
 		OutputStream os = response.getOutputStream();
 		excel.setOutputStream(os);
 		excel.init();
@@ -334,7 +326,7 @@ public class CrudBaseController extends RcptBaseController{
 	}
 	
 
-	protected Map<String, String> buildParams(HttpServletRequest request) {
+	private Map<String, String> buildParams(HttpServletRequest request) {
 		return WebTools.buildJqParams(request);
 	}
 	

@@ -6,7 +6,7 @@
 	<version>1.0-SNAPSHOT</version>
 	<properties>
 		<!-- 主要依赖库的版本定义 -->
-		<spring.version>3.2.0.RELEASE</spring.version>
+		<spring.version>4.0.0.RELEASE</spring.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<repositories>
@@ -217,11 +217,7 @@
 			<artifactId>sml-springmvc-web</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>org.hw.sml</groupId>
-			<artifactId>sml-helper-plugin</artifactId>
-			<version>1.0-SNAPSHOT</version>
-		</dependency>
+		
 	</dependencies>
 	<packaging>war</packaging>
 </project>

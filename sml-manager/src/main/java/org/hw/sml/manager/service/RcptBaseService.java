@@ -9,11 +9,15 @@ import org.hw.sml.jdbc.JdbcTemplate;
 import org.hw.sml.model.Result;
 import org.hw.sml.report.model.Constants;
 import org.hw.sml.report.model.Update;
-
+import org.hw.sml.support.ioc.annotation.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RcptBaseService {
+	public  Logger logger=LoggerFactory.getLogger(getClass());
 	
-	protected SqlMarkupAbstractTemplate sqlMarkupTemplate;
+	@Inject
+	protected SqlMarkupAbstractTemplate sqlMarkupAbstractTemplate;
 	
 	protected String mark="";
 	
@@ -33,7 +37,8 @@ public class RcptBaseService {
 		update.setTableName(tableName);
 		update.setType(Constants.TYPE_INSERT);
 		update.init();
-		int flag = sqlMarkupTemplate.getJdbc(update.getDbId()).batchUpdate(update.getUpateSql(), update.getObjects()).length;
+		logger.info("executeSql add:["+update.getUpateSql()+"]");
+		int flag = sqlMarkupAbstractTemplate.getJdbc(update.getDbId()).batchUpdate(update.getUpateSql(), update.getObjects()).length;
 		return flag;
 	}
 	/**
@@ -47,7 +52,8 @@ public class RcptBaseService {
 		update.setTableName(tableName);
 		update.setType(Constants.TYPE_UPDATE);
 		update.init();
-		int flag = sqlMarkupTemplate.getJdbc(update.getDbId()).batchUpdate(update.getUpateSql(), update.getObjects()).length;
+		logger.info("executeSql update:["+update.getUpateSql()+"]");
+		int flag = sqlMarkupAbstractTemplate.getJdbc(update.getDbId()).batchUpdate(update.getUpateSql(), update.getObjects()).length;
 		return flag;
 	}
 	/**
@@ -61,7 +67,8 @@ public class RcptBaseService {
 		update.setTableName(tableName);
 		update.setType(Constants.TYPE_DELETE);
 		update.init();
-		int flag = sqlMarkupTemplate.getJdbc(update.getDbId()).batchUpdate(update.getUpateSql(), update.getObjects()).length;
+		logger.info("executeSql delete:["+update.getUpateSql()+"]");
+		int flag = sqlMarkupAbstractTemplate.getJdbc(update.getDbId()).batchUpdate(update.getUpateSql(), update.getObjects()).length;
 		return flag;
 	}
 	/**
@@ -75,8 +82,9 @@ public class RcptBaseService {
 		update.setTableName(tableName);
 		update.setType(Constants.TYPE_ADU);
 		update.init();
-		boolean exists=sqlMarkupTemplate.getJdbc(update.getDbId()).queryForInt(update.isExistSql(), update.getExistParams())>0;
-		int flag = sqlMarkupTemplate.getJdbc(update.getDbId()).update(update.getUpdateSqlForAdu(exists),update.getObjectForAdu(exists));
+		boolean exists=sqlMarkupAbstractTemplate.getJdbc(update.getDbId()).queryForInt(update.isExistSql(), update.getExistParams())>0;
+		logger.info("executeSql adu:["+update.getUpdateSqlForAdu(exists)+"]");
+		int flag = sqlMarkupAbstractTemplate.getJdbc(update.getDbId()).update(update.getUpdateSqlForAdu(exists),update.getObjectForAdu(exists));
 		return flag;
 	}
 	/**
@@ -89,7 +97,7 @@ public class RcptBaseService {
 		if(ifId==null){
 		   ifId=mapper.get("queryById")==null?(getClassName()+"-"+"queryById"):mapper.get("queryById");
 		}
-		return sqlMarkupTemplate.getSmlContextUtils().query(ifId,params);
+		return sqlMarkupAbstractTemplate.getSmlContextUtils().query(ifId,params);
 	}
 	/**
 	 * 根据查询条件查多条记录
@@ -101,7 +109,7 @@ public class RcptBaseService {
 		if(ifId==null){
 		   ifId=mapper.get("query")==null?(getClassName()+"-"+"query"):mapper.get("query");
 		}
-		return sqlMarkupTemplate.getSmlContextUtils().query(ifId,params);
+		return sqlMarkupAbstractTemplate.getSmlContextUtils().query(ifId,params);
 	}
 	/**
 	 * 查询返回任意配置返回值
@@ -109,7 +117,7 @@ public class RcptBaseService {
 	 * @return
 	 */
 	public <T> T query(String ifId,Map<String,String> params){
-		return sqlMarkupTemplate.getSmlContextUtils().query(ifId,params);
+		return sqlMarkupAbstractTemplate.getSmlContextUtils().query(ifId,params);
 	}
 	/**
 	 * 分页查询
@@ -121,7 +129,7 @@ public class RcptBaseService {
 		if(ifId==null){
 			ifId=mapper.get("page")==null?(getClassName()+"-"+"page"):mapper.get("page");
 		}
-		return sqlMarkupTemplate.getSmlContextUtils().query(ifId,params);
+		return sqlMarkupAbstractTemplate.getSmlContextUtils().query(ifId,params);
 	}
 	/**
 	 * 配置更新
@@ -130,15 +138,21 @@ public class RcptBaseService {
 	 * @return
 	 */
 	public int update(String ifId,Map<String,String> params){
-		return sqlMarkupTemplate.getSmlContextUtils().update(ifId, params);
+		return sqlMarkupAbstractTemplate.getSmlContextUtils().update(ifId, params);
 	}
 	public int update(Map<String,String> params){
-		return sqlMarkupTemplate.getSmlContextUtils().update(params);
+		return sqlMarkupAbstractTemplate.getSmlContextUtils().update(params);
 	}
 	
 	
 
-	
+
+	public String getMark() {
+		return mark;
+	}
+	public void setMark(String mark) {
+		this.mark = mark;
+	}
 	public String getTableName() {
 		return tableName;
 	}
@@ -157,23 +171,11 @@ public class RcptBaseService {
 	//子类中，如果没有定义id则用类名+方法作为ifId
 		String s = "标识-当前类名已知-方法名已知";
 	public JdbcTemplate getJdbc(String dbid){
-		return sqlMarkupTemplate.getJdbc(dbid);
+		return sqlMarkupAbstractTemplate.getJdbc(dbid);
 	}
 
 	public int clear(String parameter) {
-		return sqlMarkupTemplate.getSmlContextUtils().clear(parameter);
-	}
-	public SqlMarkupAbstractTemplate getSqlMarkupTemplate() {
-		return sqlMarkupTemplate;
-	}
-	public void setSqlMarkupTemplate(SqlMarkupAbstractTemplate sqlMarkupTemplate) {
-		this.sqlMarkupTemplate = sqlMarkupTemplate;
-	}
-	public String getMark() {
-		return mark;
-	}
-	public void setMark(String mark) {
-		this.mark = mark;
+		return sqlMarkupAbstractTemplate.getSmlContextUtils().clear(parameter);
 	}
 	
 }

@@ -1,8 +1,6 @@
 package org.hw.sml.office.excel.parser;
 
 import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,8 +58,6 @@ public class StypeParser extends ExcelBaseParser{
 	public static void main(String[] args) throws Exception {
 		StypeParser stypeParser=new StypeParser();
 		URL url=StypeParser.class.getResource("/");
-		Path path = Paths.get(url.toURI());
-		System.out.println(path);
 		stypeParser.setInputStream(StypeParser.class.getResourceAsStream("model.xls"));
 		stypeParser.setType(Type.xls);
 		stypeParser.setxStart(-1);

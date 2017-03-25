@@ -8,7 +8,8 @@ public class RcptFastJsonMapper implements JsonMapper{
 	public <T> T toObj(String json, Class<T> t) {
 			return WebTools.fromJson(json, t);
 	}
-	public String toJson(Object value) {
-		return toJson(value);
+	public String toJson(Object obj) {
+			return WebTools.toJson(obj);
+	
 	}
 }

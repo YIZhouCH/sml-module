@@ -1,25 +1,32 @@
 package org.hw.sml.manager.tools;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.hw.sml.tools.MapUtils;
 import org.hw.sml.tools.Maps;
 
 import com.alibaba.fastjson.JSON;
 
 public class WebTools {
+	
 	/**
 	 * 输出到界面
 	 * @param response
@@ -60,7 +67,7 @@ public class WebTools {
 		return fromJson(json, t);
 	}
 	public static <T> T fromJson(String json,Class<T> t){
-		return JSON.parseObject(json, t);
+		return JSON.parseObject(json,t);
 	}
 	/**
 	 * jqgrid插件查询
@@ -191,15 +198,86 @@ public class WebTools {
                 sb.append('\t');
           }
      }
+    public static boolean isFormMethod(HttpServletRequest request){
+    	return request.getHeader("Content-Type").contains("multipart/form-data");
+    }
+    public static Map<String,String> upload(String uploadPath,HttpServletRequest request) throws Exception{
+		Map<String,String> result=MapUtils.newHashMap();
+		String filePath = null;
+		boolean isFile = ServletFileUpload.isMultipartContent(request);
+		
+		if(!isFile){
+			throw new Exception("Selected file is error!");
+		}else{
+			DiskFileItemFactory fa = new DiskFileItemFactory();
+			ServletFileUpload upload = new ServletFileUpload(fa);
+			upload.setHeaderEncoding("utf-8");
+			File uploadDir = new File(uploadPath);
+	        if (!uploadDir.exists()) {
+	            uploadDir.mkdirs();
+	        }
+	        try {
+	            List<FileItem> formItems = upload.parseRequest(request);
+	            if (formItems != null && formItems.size() > 0) {
+	                for (FileItem item : formItems) {
+	                    if (!item.isFormField()) {
+	                        String fileName = new File(item.getName()).getName();
+	                        filePath = uploadPath + File.separator + fileName;
+	                        File storeFile = new File(filePath);
+	                        item.write(storeFile);
+	                    }else{
+	                    	result.put(item.getFieldName(), item.getString());
+	                    }
+	                }
+	            }
+	           
+	        } catch (Exception ex) {
+	        	throw new Exception("Upload file fail");
+	        }
+		}
+		result.put("filePath", filePath);
+		return result;
+	}
+    
+
+    public static String[] buildList2Arr(List<String> ns) {
+		String[] arr = new String[ns.size()];
+		for (int i = 0; i < ns.size(); i++) {
+			arr[i] = ns.get(i);
+		}
+		return arr;
+	}
+    
+    public static List<Map<String, Object>> toObjs(Map<String, Object> param) {
+		List<String> propertys=(List<String>) param.get("propertys");
+		List<List<Object>> datas=(List<List<Object>>) param.get("datas");
+		Map<String,Object> record = null;
+		List<Map<String,Object>> result = new ArrayList<Map<String,Object>>();
+		for (List<Object> data : datas) {
+			record = new HashMap<String,Object>();//每条记录
+			for (int i = 0; i < data.size(); i++) {
+				record.put(propertys.get(i), data.get(i));//记录中个字段和属性值
+			}
+			result.add(record);
+		}
+		return result;
+	}
+    public static void exportPreDone(String filename,String userAgent,HttpServletResponse response){
+    	String fileName=filename;
+		try {
+			fileName = WebTools.getContentDisposition(filename, userAgent);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		response.setHeader("Content-Disposition","attachment;" + fileName);
+		response.setHeader("Connection", "close");
+		response.setHeader("Content-Type", "application/octet-stream");
+    }
 	public static void main(String[] args) {
 		Map map=new Maps<String,Object>().put("a","b").put("c",new Maps<String,Object>().put("d",'e').getMap()).getMap();
 		Map<String,Object> result=MapUtils.newLinkedHashMap();
 		result.put("f",map);
 		result.put("g",Arrays.asList(map,map,map));
-		Map<Object,Object> rrr=MapUtils.newConcurrentHashMap();
-		rrr.put("aaaa",map);
-		rrr.put("result",result);
-		rrr.put("e",Arrays.asList(result,map,result));
-		System.out.println(formatJson(toJson(rrr)));
+		System.out.println(formatJson(toJson(result)));
 	}
 }
