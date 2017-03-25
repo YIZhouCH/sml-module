@@ -177,5 +177,12 @@ public class RcptBaseService {
 	public int clear(String parameter) {
 		return sqlMarkupAbstractTemplate.getSmlContextUtils().clear(parameter);
 	}
+	public SqlMarkupAbstractTemplate getSqlMarkupAbstractTemplate() {
+		return sqlMarkupAbstractTemplate;
+	}
+	public void setSqlMarkupAbstractTemplate(
+			SqlMarkupAbstractTemplate sqlMarkupAbstractTemplate) {
+		this.sqlMarkupAbstractTemplate = sqlMarkupAbstractTemplate;
+	}
 	
 }

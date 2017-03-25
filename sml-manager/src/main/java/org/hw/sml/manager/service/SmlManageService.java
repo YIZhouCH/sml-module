@@ -34,7 +34,6 @@ import org.hw.sml.tools.MapUtils;
 //@SmlResource
 public class SmlManageService extends RcptBaseService{
 	private static final String COMMON="common";
-	private RcptBaseService rcptBaseService;
 	/**
 	 * 接口概览
 	 * @param uri
@@ -191,14 +190,14 @@ public class SmlManageService extends RcptBaseService{
 					param.put("page",String.valueOf(1+(start/limit)));
 					param.put("limit",String.valueOf(limit));
 					if(param.containsKey("ifId")){
-						Object obj= rcptBaseService.query(param.get("ifId"),param);
+						Object obj= query(param.get("ifId"),param);
 						if(obj instanceof Result){
 							return ((Result)obj).getDatas();
 						}else{
 							return (List)obj;
 						}
 					}else{
-						return rcptBaseService.page(param).getDatas();
+						return page(param).getDatas();
 					}
 				}
 			});
@@ -239,14 +238,14 @@ public class SmlManageService extends RcptBaseService{
 						params.put("page",String.valueOf(1+(start/limit)));
 						params.put("limit",String.valueOf(limit));
 						if(params.containsKey("ifId")){
-							Object obj= rcptBaseService.query(String.valueOf(params.get("ifId")),params);
+							Object obj= query(String.valueOf(params.get("ifId")),params);
 							if(obj instanceof Result){
 								return ((Result)obj).getDatas();
 							}else{
 								return (List)obj;
 							}
 						}else{
-							return rcptBaseService.page(params).getDatas();
+							return page(params).getDatas();
 						}
 					}
 				});
@@ -325,11 +324,6 @@ public class SmlManageService extends RcptBaseService{
 			pns=pnLst.toArray(new String[pnLst.size()]);
 			hns=hnLst.toArray(new String[hnLst.size()]);
 		}
-	}
-	
-	public static void main(String[] args) {
-		SmlResource smlResource=SmlManageService.class.getAnnotation(SmlResource.class);
-		System.out.println(smlResource.name().equals(""));
 	}
 	
 }

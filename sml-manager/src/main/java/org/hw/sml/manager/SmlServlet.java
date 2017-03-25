@@ -2,6 +2,7 @@ package org.hw.sml.manager;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -13,10 +14,20 @@ import org.hw.sml.manager.context.SmlWebContext;
 import org.hw.sml.manager.service.SmlManageService;
 import org.hw.sml.manager.tools.WebTools;
 import org.hw.sml.support.ioc.BeanHelper;
+import org.hw.sml.tools.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SmlServlet extends HttpServlet{
+	public static List<String> igNoreOperator=MapUtils.newArrayList();
+	static{
+		igNoreOperator.add("index");
+		igNoreOperator.add("query");
+		igNoreOperator.add("invoke");
+		igNoreOperator.add("export");
+		igNoreOperator.add("update");
+		
+	}
 	public static final Logger logger=LoggerFactory.getLogger(SmlServlet.class);
 	/**
 	 * 
@@ -28,7 +39,7 @@ public class SmlServlet extends HttpServlet{
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
-		BeanHelper.start();
+		SmlWebContext.start();
 	}
 
 
@@ -43,12 +54,29 @@ public class SmlServlet extends HttpServlet{
 		 logger.debug("sml request method[{}]-uri[{}]",method,uri);
 		 String[] uris=WebTools.getUris(uri);
 		 //2开始
-		 if(uris.length<4){
-			 WebTools.print(response,WebTools.buildResult(false,"uri error["+uri+"]",null));
+		 if(uris.length<3){
+			 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			 return;
 		 }
 		 String operater=uris[2];
+		 if(!igNoreOperator.contains(operater)){
+			 try{
+				 SmlWebContext.set(request, response);
+				 SmlWebContext.doService(method,uri);
+			 }catch (Throwable e) {
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				response.getWriter().print(e.getLocalizedMessage());
+				e.printStackTrace();
+			}finally{
+				 SmlWebContext.release();
+			}
+			return;
+		 }
 		 String mark=uris[3];
+		 if(uris.length<4){
+			 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			 return;
+		 }
 		 SmlManageService smlManageService=BeanHelper.getBean(SmlManageService.class);
 		 if(smlManageService==null){
 			 WebTools.print(response,WebTools.buildResult(false,"bean[smlManageService] not exists!",null));
@@ -58,6 +86,7 @@ public class SmlServlet extends HttpServlet{
 			SmlManageService.class.getMethod(operater,String.class,HttpServletRequest.class,HttpServletResponse.class)
 				.invoke(smlManageService,mark,request,response);
 		}catch (NoSuchMethodException e) {
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			WebTools.print(response,WebTools.buildResult(false,"method[smlManageService."+operater+"] not exists!",null));
 		}catch(InvocationTargetException t){
 			Throwable e = t.getTargetException();// 获取目标异常  
