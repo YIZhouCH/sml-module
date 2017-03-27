@@ -1,9 +1,13 @@
-package com.eastcom_sw.jklsm.service;
+package com.eastcom_sw.jklsm.web;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.hw.sml.manager.service.RcptBaseService;
+import org.hw.sml.rest.annotation.Body;
+import org.hw.sml.rest.annotation.Param;
+import org.hw.sml.rest.annotation.PathParam;
+import org.hw.sml.rest.annotation.SmlResource;
 import org.hw.sml.support.ioc.annotation.Bean;
 
 @SmlResource("helloworld")
@@ -23,7 +27,6 @@ public class HelloWorldResource extends RcptBaseService{
 	}
 	@SmlResource("/query")
 	public Object query3() throws InterruptedException{
-		Thread.sleep(10000);
 		return getJdbc("defJt").queryForList("select * from dual");
 	}
 
