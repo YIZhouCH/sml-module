@@ -11,11 +11,11 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hw.sml.manager.annotation.Body;
-import org.hw.sml.manager.annotation.Param;
-import org.hw.sml.manager.annotation.PathParam;
-import org.hw.sml.manager.annotation.SmlResource;
 import org.hw.sml.manager.tools.WebTools;
+import org.hw.sml.rest.annotation.Body;
+import org.hw.sml.rest.annotation.Param;
+import org.hw.sml.rest.annotation.PathParam;
+import org.hw.sml.rest.annotation.SmlResource;
 import org.hw.sml.support.ioc.BeanHelper;
 import org.hw.sml.tools.ClassUtil;
 import org.hw.sml.tools.MapUtils;
@@ -133,7 +133,7 @@ public class SmlWebContext {
 						String pv=getCurrentRequest().getParameter(((Param)at).value());
 						params[i]=ClassUtil.convertValueToRequiredType((pv==null?((Param)at).defaultValue():pv),clazz);
 					}else if(at.annotationType().isAssignableFrom(Body.class)){
-						if(method.equals("GET")){
+						if(method.equals(SmlResource.GET)){
 							getCurrentResponse().setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 							return;
 						}

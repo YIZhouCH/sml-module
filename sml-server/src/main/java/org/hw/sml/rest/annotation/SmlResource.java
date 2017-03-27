@@ -1,4 +1,4 @@
-package org.hw.sml.manager.annotation;
+package org.hw.sml.rest.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

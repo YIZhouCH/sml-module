@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hw.sml.manager.annotation.SmlResource;
 import org.hw.sml.manager.model.PageObject;
 import org.hw.sml.manager.tools.HtmlHelp;
 import org.hw.sml.manager.tools.WebTools;
@@ -22,6 +21,7 @@ import org.hw.sml.office.excel.creater.Excel07Creater;
 import org.hw.sml.office.excel.creater.ExcelBaseCreater;
 import org.hw.sml.office.excel.creater.ExcelCsvCreater;
 import org.hw.sml.report.model.Update;
+import org.hw.sml.rest.annotation.SmlResource;
 import org.hw.sml.support.ClassHelper;
 import org.hw.sml.support.ioc.BeanHelper;
 import org.hw.sml.tools.ClassUtil;
