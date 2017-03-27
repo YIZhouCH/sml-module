@@ -3,7 +3,6 @@ package org.hw.sml.manager.context;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -192,8 +191,5 @@ public class SmlWebContext {
 		result.add(path.replaceAll("\\{\\w+\\}", "([\\\\w|\\\\-|:]+)"));
 		result.addAll(RegexUtils.matchGroup("\\{\\w+\\}",path));
 		return result.toArray(new String[0]);
-	}
-	public static void main(String[] args) {
-		System.out.println(Arrays.asList(RegexUtils.matchSubString("/helloworld/aaaa/([\\w|\\-|:]+)", "/helloworld/aaaa/a-a:c")));
 	}
 }

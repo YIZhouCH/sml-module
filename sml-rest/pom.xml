@@ -29,6 +29,7 @@
 		  <groupId>com.oracle</groupId>
 		  <artifactId>ojdbc</artifactId>
 		  <version>11</version>
+		  <scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>
