@@ -7,8 +7,8 @@
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 	<groupId>org.hw.sml</groupId>
-	<artifactId>sml-rest</artifactId>
-	<description>sml-rest 模块</description>
+	<artifactId>sml-server</artifactId>
+	<description>sml-server 模块</description>
 	<dependencies>
 		<dependency>
 			<groupId>org.hw.sml</groupId>
@@ -24,6 +24,7 @@
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>1.0.9</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 		  <groupId>com.oracle</groupId>

@@ -173,7 +173,7 @@ public class Context {
 				if(result!=null&&!(result instanceof CharSequence)){
 					result=new RcptFastJsonMapper().toJson(result);
 				}
-				return NanoHTTPD.newResponse(Status.OK, "application/json;",result==null?null:(String)result);
+				return NanoHTTPD.newResponse(Status.OK,getProduces(urlSource.getMethod()),result==null?null:(String)result);
 			}
 		} catch (IllegalArgumentException e) {
 			throw new ResponseException(Status.BAD_REQUEST,e.getMessage());
@@ -185,11 +185,21 @@ public class Context {
 			throw e;
 		}
 	}
+	/**
+	 * 优先取query-param|然后 header-param
+	 * @param session
+	 * @param name
+	 * @return
+	 */
 	private static String getParamter(IHTTPSession session,String name){
 		String result=session.getParms().get(name);
 		if(result==null){
 			result=session.getHeaders().get(name);
 		}
 		return result;
+	}
+	private static String getProduces(Method method){
+		SmlResource sml=method.getAnnotation(SmlResource.class);
+		return sml.produces()+";charset="+sml.charset();
 	}
 }
