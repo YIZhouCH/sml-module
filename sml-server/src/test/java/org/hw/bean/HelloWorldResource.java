@@ -1,5 +1,10 @@
 package org.hw.bean;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.LinkedHashMap;
 
 import org.hw.sml.core.SqlMarkupAbstractTemplate;
@@ -7,6 +12,9 @@ import org.hw.sml.rest.annotation.Body;
 import org.hw.sml.rest.annotation.Param;
 import org.hw.sml.rest.annotation.PathParam;
 import org.hw.sml.rest.annotation.SmlResource;
+import org.hw.sml.server.NanoHTTPD;
+import org.hw.sml.server.NanoHTTPD.IHTTPSession;
+import org.hw.sml.server.NanoHTTPD.Response;
 import org.hw.sml.support.ioc.BeanHelper;
 import org.hw.sml.support.ioc.annotation.Bean;
 import org.hw.sml.support.ioc.annotation.Inject;
@@ -32,6 +40,21 @@ public class HelloWorldResource{
 	@SmlResource("/query")
 	public Object query3() throws Exception{
 		return sqlMarkupAbstractTemplate.getSmlContextUtils().query("area-pm", "");
+	}
+	@SmlResource(value="/export",produces=SmlResource.OCTET_STREAM)
+	public Response export(@Param("User-Agent")String userAgent,IHTTPSession session) throws FileNotFoundException, UnsupportedEncodingException{
+		InputStream is=new  FileInputStream("d:/temp/RdbmsTable.xlsx");
+		return NanoHTTPD.newStreamResponse(is).export("表名称.xlsx", userAgent);
+	}
+	@SmlResource(value="import",produces=SmlResource.TEXT_PLAIN)
+	public String importXls(IHTTPSession session) throws IOException{
+		System.out.println(session.getFiles());
+		System.out.println(session.getParms());
+		System.out.println(session.getHeaders());
+		System.out.println(session.getCookies());
+		String filename=session.getFiles().get("file");
+		System.out.println(filename);	
+		return "success";
 	}
 	public static void main(String[] args) {
 		BeanHelper.start();

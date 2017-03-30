@@ -170,10 +170,11 @@ public class Context {
 			if(result!=null&&result instanceof Response){
 				return (Response)result;
 			}else{
-				if(result!=null&&!(result instanceof CharSequence)){
+				String produces=getProduces(urlSource.getMethod());
+				if(result!=null&&(!(result instanceof CharSequence))){
 					result=new RcptFastJsonMapper().toJson(result);
 				}
-				return NanoHTTPD.newResponse(Status.OK,getProduces(urlSource.getMethod()),result==null?null:(String)result);
+				return NanoHTTPD.newResponse(Status.OK,produces,result==null?null:(String)result);
 			}
 		} catch (IllegalArgumentException e) {
 			throw new ResponseException(Status.BAD_REQUEST,e.getMessage());
@@ -194,7 +195,7 @@ public class Context {
 	private static String getParamter(IHTTPSession session,String name){
 		String result=session.getParms().get(name);
 		if(result==null){
-			result=session.getHeaders().get(name);
+			result=session.getHeaders().get(name.toLowerCase());
 		}
 		return result;
 	}
@@ -202,4 +203,5 @@ public class Context {
 		SmlResource sml=method.getAnnotation(SmlResource.class);
 		return sml.produces()+";charset="+sml.charset();
 	}
+	
 }

@@ -27,6 +27,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
@@ -61,6 +62,7 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.hw.sml.rest.annotation.SmlResource;
 import org.hw.sml.server.NanoHTTPD.Response.IStatus;
 import org.hw.sml.server.NanoHTTPD.Response.Status;
 
@@ -317,7 +319,7 @@ public abstract class NanoHTTPD {
         public void delete() throws Exception {
             safeClose(this.fstream);
             if (!this.file.delete()) {
-                throw new Exception("could not delete temporary file: " + this.file.getAbsolutePath());
+               // throw new Exception("could not delete temporary file: " + this.file.getAbsolutePath());
             }
         }
 
@@ -540,6 +542,8 @@ public abstract class NanoHTTPD {
         private String uri;
 
         private Method method;
+        
+        private Map<String,String> files;
 
         private Map<String, List<String>> parms;
 
@@ -685,8 +689,8 @@ public abstract class NanoHTTPD {
                             partContentType = matcher.group(2).trim();
                         }
                         mpline = in.readLine();
-                        System.out.println(mpline);
                     }
+                    in.close();
                     int partHeaderLength = 0;
                     while (headerLines-- > 0) {
                         partHeaderLength = scipOverNewLine(partHeaderBuff, partHeaderLength);
@@ -726,12 +730,14 @@ public abstract class NanoHTTPD {
                         }
                         values.add(fileName);
                     }
-                    System.out.println(values);
                    }
+                
             } catch (ResponseException re) {
                 throw re;
             } catch (Exception e) {
                 throw new ResponseException(Response.Status.INTERNAL_ERROR, e.toString());
+            }finally{
+            
             }
         }
 
@@ -1103,6 +1109,7 @@ public abstract class NanoHTTPD {
                 } else if (Method.PUT.equals(this.method)) {
                     files.put("content", saveTmpFile(fbuf, 0, fbuf.limit(), null));
                 }
+                this.files=files;
             } finally {
                 safeClose(randomAccessFile);
             }
@@ -1127,7 +1134,11 @@ public abstract class NanoHTTPD {
                 } catch (Exception e) { // Catch exception if any
                     throw new Error(e); // we won't recover, so throw an error
                 } finally {
-                    safeClose(fileOutputStream);
+                	try {
+						fileOutputStream.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
                 }
             }
             return path;
@@ -1142,6 +1153,11 @@ public abstract class NanoHTTPD {
         public String getRemoteHostName() {
             return this.remoteHostname;
         }
+
+		@Override
+		public Map<String, String> getFiles() {
+			return this.files;
+		}
     }
 
     /**
@@ -1155,6 +1171,8 @@ public abstract class NanoHTTPD {
         CookieHandler getCookies();
 
         Map<String, String> getHeaders();
+        
+        Map<String, String> getFiles();
 
         InputStream getInputStream();
 
@@ -1248,7 +1266,12 @@ public abstract class NanoHTTPD {
 
             int getRequestStatus();
         }
-
+        public Response export(String fileName,String userAgent) throws UnsupportedEncodingException{
+        	this.header.put("Content-Disposition", "attachment;"+getContentDisposition(fileName, userAgent));
+        	this.header.put("Connection", "close");
+        	return this;
+        }
+        
         /**
          * Some HTTP response status codes
          */
@@ -2094,6 +2117,9 @@ public abstract class NanoHTTPD {
     public static Response newChunkedResponse(IStatus status, String mimeType, InputStream data) {
         return new Response(status, mimeType, data, -1);
     }
+    public static Response newStreamResponse(InputStream data){
+    	return new  Response(Status.OK,SmlResource.OCTET_STREAM, data, -1);
+    }
     public static Response newResponse(IStatus status,String mineType,String msg){
     	return new Response(status, mineType,new ByteArrayInputStream(msg.getBytes()),-1);
     }
@@ -2135,56 +2161,8 @@ public abstract class NanoHTTPD {
         return newFixedLengthResponse(Status.OK, NanoHTTPD.MIME_HTML, msg);
     }
 
-    /**
-     * Override this to customize the server.
-     * <p/>
-     * <p/>
-     * (By default, this returns a 404 "Not Found" plain text error response.)
-     * 
-     * @param session
-     *            The HTTP session
-     * @return HTTP response, see class Response for details
-     */
-    public Response serve(IHTTPSession session) {
-        Map<String, String> files = new HashMap<String, String>();
-        Method method = session.getMethod();
-        if (Method.PUT.equals(method) || Method.POST.equals(method)) {
-            try {
-                session.parseBody(files);
-            } catch (IOException ioe) {
-                return newFixedLengthResponse(Response.Status.INTERNAL_ERROR, NanoHTTPD.MIME_PLAINTEXT, "SERVER INTERNAL ERROR: IOException: " + ioe.getMessage());
-            } catch (ResponseException re) {
-                return newFixedLengthResponse(re.getStatus(), NanoHTTPD.MIME_PLAINTEXT, re.getMessage());
-            }
-        }
-
-        Map<String, String> parms = session.getParms();
-        parms.put(NanoHTTPD.QUERY_STRING_PARAMETER, session.getQueryParameterString());
-        return serve(session.getUri(), method, session.getHeaders(), parms, files);
-    }
-
-    /**
-     * Override this to customize the server.
-     * <p/>
-     * <p/>
-     * (By default, this returns a 404 "Not Found" plain text error response.)
-     * 
-     * @param uri
-     *            Percent-decoded URI without parameters, for example
-     *            "/index.cgi"
-     * @param method
-     *            "GET", "POST" etc.
-     * @param parms
-     *            Parsed, percent decoded parameters from URI and, in case of
-     *            POST, data.
-     * @param headers
-     *            Header entries, percent decoded
-     * @return HTTP response, see class Response for details
-     */
-    @Deprecated
-    public Response serve(String uri, Method method, Map<String, String> headers, Map<String, String> parms, Map<String, String> files) {
-        return newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "Not Found");
-    }
+  
+    public abstract Response serve(IHTTPSession session) ;
 
     /**
      * Pluggable strategy for asynchronously executing requests.
@@ -2274,4 +2252,27 @@ public abstract class NanoHTTPD {
     public final boolean wasStarted() {
         return this.myServerSocket != null && this.myThread != null;
     }
+    public static String getContentDisposition(String fileName, String userAgent) throws UnsupportedEncodingException {
+		String rtn=fileName;
+		String newFileName = URLEncoder.encode(fileName, "UTF-8");
+		 if (userAgent != null) {
+	            userAgent = userAgent.toLowerCase();
+	            if (userAgent.contains("msie")) {
+	                rtn = "filename=\"" + newFileName + "\"";
+	            }
+	            else if (userAgent.contains("opera")) {
+	                rtn = "filename*=UTF-8''" + newFileName;
+	            }
+	            else if (userAgent.contains("safari")) {
+	                rtn = "filename=\"" + new String(fileName.getBytes("UTF-8"), "ISO8859-1") + "\"";
+	            }
+	            else if (userAgent.contains("applewebkit")) {
+	                rtn = "filename=\"" + newFileName + "\"";
+	            }
+	            else if (userAgent.contains("mozilla")) {
+	                rtn = "filename*=UTF-8''" + newFileName;
+	            }
+	        }
+		return rtn;
+	}
 }
