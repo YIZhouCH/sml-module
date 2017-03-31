@@ -651,7 +651,6 @@ public abstract class NanoHTTPD {
                             new BufferedReader(new InputStreamReader(new ByteArrayInputStream(partHeaderBuff, 0, len), Charset.forName(contentType.getEncoding())), len);
 
                     int headerLines = 0;
-                    // First line is boundary string
                     String mpline = in.readLine();
                     headerLines++;
                     if (mpline == null || !mpline.contains(contentType.getBoundary())) {
@@ -659,7 +658,6 @@ public abstract class NanoHTTPD {
                     }
 
                     String partName = null, fileName = null, partContentType = null;
-                    // Parse the reset of the header lines
                     mpline = in.readLine();
                     headerLines++;
                     while (mpline != null && mpline.trim().length() > 0) {

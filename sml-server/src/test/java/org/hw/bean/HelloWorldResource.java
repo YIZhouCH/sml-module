@@ -48,12 +48,7 @@ public class HelloWorldResource{
 	}
 	@SmlResource(value="import",produces=SmlResource.TEXT_PLAIN)
 	public String importXls(IHTTPSession session) throws IOException{
-		System.out.println(session.getFiles());
-		System.out.println(session.getParms());
-		System.out.println(session.getHeaders());
-		System.out.println(session.getCookies());
 		String filename=session.getFiles().get("file");
-		System.out.println(filename);	
 		return "success";
 	}
 	public static void main(String[] args) {
