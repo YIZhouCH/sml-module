@@ -82,6 +82,9 @@ public class Context {
 			mP="/";
 		}
 		String path=("/"+cP+"/"+mP).replaceAll("/{1,}","/");
+		if(path.endsWith("/")){
+			path=path.substring(0,path.length()-1);
+		}
 		result.add(path.replaceAll("\\{\\w+\\}", "([\\\\w|\\\\-|:]+)"));
 		result.addAll(RegexUtils.matchGroup("\\{\\w+\\}",path));
 		return result.toArray(new String[0]);
@@ -116,13 +119,21 @@ public class Context {
         }
 		String source=session.getUri();
 		source=source.substring(source.indexOf("/"));
+		String contextPath=BeanHelper.getValue("server.contextPath");
+		if(contextPath!=null){
+			if(!(source.startsWith(contextPath)||source.startsWith("/"+contextPath))){
+				throw new ResponseException(Status.NOT_FOUND,Status.NOT_FOUND.name());
+			}
+			contextPath=contextPath.startsWith("/")?contextPath:("/"+contextPath);
+			source=source.replaceFirst(contextPath, "");
+		}
 		Source urlSource=checkPath(source);
 		if(urlSource==null){
 			throw new ResponseException(Status.NOT_FOUND, "NOT_FOUND");
 		}
 		if(!urlSource.getRequestMethods().equals("")){
 			if(!urlSource.getRequestMethods().equalsIgnoreCase(session.getMethod().name())){
-				throw new ResponseException(Status.NOT_FOUND, "NOT_FOUND");
+				throw new ResponseException(Status.METHOD_NOT_ALLOWED,Status.METHOD_NOT_ALLOWED.name());
 			}
 		}
 		String[] paths=urlSource.getPaths();
@@ -157,7 +168,7 @@ public class Context {
 					}
 				}
 				if(ats.length==0){
-						if(clazz.isAssignableFrom(CharSequence.class)){
+						if(CharSequence.class.isAssignableFrom(clazz)){
 								params[i]=files.get("postData");
 						}else{
 							params[i]=new RcptFastJsonMapper().toObj(files.get("postData"), clazz);
