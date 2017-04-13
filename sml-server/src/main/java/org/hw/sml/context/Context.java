@@ -27,7 +27,7 @@ import org.hw.sml.tools.RegexUtils;
 
 
 public class Context {
-	private static class Source{
+	public static class Source{
 		private String[] paths;
 		private Method method;
 		private String requestMethods;
@@ -53,7 +53,7 @@ public class Context {
 		
 	}
 	
-	private static Map<String,Source> urlMapper=new HashMap<String,Source>();
+	public static Map<String,Source> urlMapper=new HashMap<String,Source>();
 	public static void start(){
 		Map<String,Object> beans=BeanHelper.getBeanMap();
 		for(Map.Entry<String,Object> entry:beans.entrySet()){
