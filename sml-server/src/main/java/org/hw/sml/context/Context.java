@@ -194,7 +194,7 @@ public class Context {
 		} catch (InvocationTargetException e) {
 			 throw new ResponseException(Status.INTERNAL_ERROR,e.getTargetException().getMessage());
 		}catch(Exception e){
-			throw e;
+			throw new ResponseException(Status.INTERNAL_ERROR,e.getMessage());
 		}
 	}
 	/**

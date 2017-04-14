@@ -17,7 +17,11 @@ public class SystemHelper {
 		return rm.getName().split("@")[1];
 	}
 	public static String getServerContextPath(){
-		return BeanHelper.getValue("server.contextPath");
+		String contextPath= BeanHelper.getValue("server.contextPath");
+		if(contextPath==null){
+			return "";
+		}
+		return contextPath.startsWith("/")?contextPath.substring(1):contextPath;
 	}
 	public static int getServerPort(){
 		return Integer.parseInt(BeanHelper.getValue("server.port"));
