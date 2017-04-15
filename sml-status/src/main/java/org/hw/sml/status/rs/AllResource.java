@@ -1,12 +1,21 @@
 package org.hw.sml.status.rs;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.hw.sml.context.Context;
 import org.hw.sml.context.Context.Source;
+import org.hw.sml.rest.annotation.Param;
 import org.hw.sml.rest.annotation.SmlResource;
+import org.hw.sml.server.NanoHTTPD;
+import org.hw.sml.server.NanoHTTPD.IHTTPSession;
+import org.hw.sml.server.NanoHTTPD.Response;
 import org.hw.sml.status.helper.HtmlHelp;
 import org.hw.sml.status.helper.SystemHelper;
 import org.hw.sml.status.server.ServerResource;
@@ -43,5 +52,11 @@ public class AllResource {
 			hh.append(new Object[]{m.get("uri"),m.get("method"),m.get("params")});
 		}
 		return hh.endInnerBody().toString();
+	}
+	@SmlResource("export")
+	public Response exportFile(@Param("User-Agent")String userAgent,@Param("filepath")String filepath,IHTTPSession session) throws FileNotFoundException, UnsupportedEncodingException{
+		File file=new File(filepath);
+		InputStream is=new  FileInputStream(file);
+		return NanoHTTPD.newStreamResponse(is).export(file.getName(),userAgent);
 	}
 }

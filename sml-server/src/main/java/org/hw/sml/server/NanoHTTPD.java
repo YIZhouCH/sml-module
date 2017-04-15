@@ -65,6 +65,7 @@ import javax.net.ssl.TrustManagerFactory;
 import org.hw.sml.rest.annotation.SmlResource;
 import org.hw.sml.server.NanoHTTPD.Response.IStatus;
 import org.hw.sml.server.NanoHTTPD.Response.Status;
+import org.hw.sml.support.LoggerHelper;
 
 
 public abstract class NanoHTTPD {
@@ -523,7 +524,7 @@ public abstract class NanoHTTPD {
 
         private static final int REQUEST_BUFFER_LEN = 512;
 
-        private static final int MEMORY_STORE_LIMIT = 1024;
+        private static final int MEMORY_STORE_LIMIT = 10240;
 
         public static final int BUFSIZE = 8192;
 
@@ -1804,7 +1805,7 @@ public abstract class NanoHTTPD {
             loadMimeTypes(MIME_TYPES, "META-INF/nanohttpd/default-mimetypes.properties");
             loadMimeTypes(MIME_TYPES, "META-INF/nanohttpd/mimetypes.properties");
             if (MIME_TYPES.isEmpty()) {
-                LOG.log(Level.WARNING, "no mime types found in the classpath! please provide mimetypes.properties");
+                LoggerHelper.warn(NanoHTTPD.class, "no mime types found in the classpath! please provide mimetypes.properties");
             }
         }
         return MIME_TYPES;
@@ -1825,7 +1826,7 @@ public abstract class NanoHTTPD {
                     stream = url.openStream();
                     properties.load(stream);
                 } catch (IOException e) {
-                    LOG.log(Level.SEVERE, "could not load mimetypes from " + url, e);
+                    LoggerHelper.debug(NanoHTTPD.class, "could not load mimetypes from " + url+" error["+e.getMessage()+"]");
                 } finally {
                     safeClose(stream);
                 }
@@ -2119,6 +2120,9 @@ public abstract class NanoHTTPD {
     	return new  Response(Status.OK,SmlResource.OCTET_STREAM, data, -1);
     }
     public static Response newResponse(IStatus status,String mineType,String msg){
+    	if(msg==null||msg.length()==0){
+    		msg=" ";
+    	}
     	return new Response(status, mineType,new ByteArrayInputStream(msg.getBytes()),-1);
     }
 

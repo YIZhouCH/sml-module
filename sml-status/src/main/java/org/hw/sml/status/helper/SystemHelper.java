@@ -7,6 +7,12 @@ import java.util.Date;
 import org.hw.sml.support.ioc.BeanHelper;
 
 public class SystemHelper {
+	static{
+		String conf=BeanHelper.getValue("sml.server.dir.conf");
+		System.setProperty("sml.server.dir.conf",conf==null?"../conf":conf);
+		String logs=BeanHelper.getValue("sml.server.dir.logs");
+		System.setProperty("sml.server.dir.logs",logs==null?"../logs":logs);
+	}
 	public static Runtime rt=Runtime.getRuntime();
 	public static RuntimeMXBean rm=ManagementFactory.getRuntimeMXBean();
 	
@@ -44,6 +50,12 @@ public class SystemHelper {
 	public static int availableProcessors(){
 		return rt.availableProcessors();
 	}
+	public static String getServerDirLog(){
+		return System.getProperty("sml.server.dir.logs");
+	}
+	public static String getServerDirConf(){
+		return System.getProperty("sml.server.dir.conf");
+	}
 	
 	public static void main(String[] args) {
 		System.out.println(getPid());
@@ -52,6 +64,8 @@ public class SystemHelper {
 		System.out.println(maxMemory());
 		System.out.println(useMemoryUtility());
 		System.out.println(availableProcessors());
+		System.out.println(getServerDirConf());
+		System.out.println(getServerDirLog());
 	}
 	
 }

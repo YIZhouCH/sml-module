@@ -26,11 +26,20 @@ import org.hw.sml.tools.MapUtils;
 @Bean
 @SmlResource("server")
 public class ServerResource {
-	public Map<String,Map<String,Object>> sources=MapUtils.newLinkedHashMap();
+	public Map<String,Map<String,Object>> sources=MapUtils.newHashMap();
 	
 	@Inject("manage-status-resource")
 	private StatusResource statusResource;
 	
+	@SmlResource("clearAll")
+	public Object clear(){
+		sources.clear();
+		return "1";
+	}
+	@SmlResource("sources")
+	public Object source(){
+		return sources;
+	}
 	@SmlResource(produces=SmlResource.TEXT_HTML)
 	public Object server(){
 		HtmlHelp hh=new HtmlHelp();

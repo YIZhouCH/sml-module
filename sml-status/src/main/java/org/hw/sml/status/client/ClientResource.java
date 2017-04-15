@@ -33,5 +33,13 @@ public class ClientResource {
 			LoggerHelper.error(getClass(),"status send error["+e.toString()+"]");
 		}
 	}
+
+	public String getSeverUrl() {
+		return severUrl;
+	}
+
+	public void setSeverUrl(String severUrl) {
+		this.severUrl = severUrl;
+	}
 	
 }

@@ -48,6 +48,7 @@ public class HtmlHelp implements Serializable{
 				"-->"+
 				"</style>");
 		preBody.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">");
+		preBody.append("<META HTTP-EQUIV=\"Refresh\" CONTENT=\"30\">");
 		preBody.append("<body>");
 	
 		endBody.append("</body>");

@@ -5,10 +5,12 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hw.sml.FrameworkConstant;
 import org.hw.sml.component.RcptFastJsonMapper;
 import org.hw.sml.rest.annotation.Body;
 import org.hw.sml.rest.annotation.Param;
@@ -27,6 +29,7 @@ import org.hw.sml.tools.RegexUtils;
 
 
 public class Context {
+	private static  Map<String,String> urlrewrite=MapUtils.newHashMap();
 	public static class Source{
 		private String[] paths;
 		private Method method;
@@ -52,7 +55,9 @@ public class Context {
 		}
 		
 	}
-	
+	public static Map<String,String> getUrlrewrite(){
+		return urlrewrite;
+	}
 	public static Map<String,Source> urlMapper=new HashMap<String,Source>();
 	public static void start(){
 		Map<String,Object> beans=BeanHelper.getBeanMap();
@@ -70,7 +75,14 @@ public class Context {
 				urlMapper.put(paths[0],new Source(paths, method,smlMethodResource.method(),bean));
 				LoggerHelper.debug(Context.class,String.format("urlMapper:%s,methodName:%s,parameter:%s",paths[0],method.getName(),Arrays.asList(method.getParameterTypes())));
 			}
-			
+		}
+		Enumeration<Object> es= FrameworkConstant.otherProperties.keys();
+		while(es.hasMoreElements()){
+			String key=es.nextElement().toString();
+			if(key.startsWith("urlrewrite.")){
+				String from=key.substring(11);
+				urlrewrite.put(from,BeanHelper.getValue(key));
+			}
 		}
 	}
 	private static String[] getPaths(String cP,String mP){
@@ -118,6 +130,9 @@ public class Context {
             }
         }
 		String source=session.getUri();
+		if(urlrewrite.containsKey(source)){
+			source=urlrewrite.get(source);
+		}
 		source=source.substring(source.indexOf("/"));
 		String contextPath=BeanHelper.getValue("server.contextPath");
 		if(contextPath!=null){
