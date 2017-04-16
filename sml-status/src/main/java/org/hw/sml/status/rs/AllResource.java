@@ -16,7 +16,6 @@ import org.hw.sml.rest.annotation.SmlResource;
 import org.hw.sml.server.NanoHTTPD;
 import org.hw.sml.server.NanoHTTPD.IHTTPSession;
 import org.hw.sml.server.NanoHTTPD.Response;
-import org.hw.sml.status.helper.HtmlHelp;
 import org.hw.sml.status.helper.SystemHelper;
 import org.hw.sml.status.server.ServerResource;
 import org.hw.sml.support.ioc.annotation.Bean;
@@ -42,16 +41,6 @@ public class AllResource {
 		}
 		result.put("sources",subResult);
 		return result;
-	}
-	@SmlResource(value="html",produces=SmlResource.TEXT_HTML)
-	public String html(){
-		HtmlHelp hh=new HtmlHelp();
-		hh.append("<h3>server.contextPath:"+SystemHelper.getServerContextPath()+"</h3>");
-		hh.append("resource",new String[]{"uri","method","other"});
-		for(Map<String,Object> m:(List<Map<String,Object>>)source().get("sources")){
-			hh.append(new Object[]{m.get("uri"),m.get("method"),m.get("params")});
-		}
-		return hh.endInnerBody().toString();
 	}
 	@SmlResource("export")
 	public Response exportFile(@Param("User-Agent")String userAgent,@Param("filepath")String filepath,IHTTPSession session) throws FileNotFoundException, UnsupportedEncodingException{

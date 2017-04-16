@@ -1,5 +1,8 @@
 package org.hw.sml.context;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -21,6 +24,7 @@ import org.hw.sml.server.NanoHTTPD.IHTTPSession;
 import org.hw.sml.server.NanoHTTPD.Response;
 import org.hw.sml.server.NanoHTTPD.Response.Status;
 import org.hw.sml.server.NanoHTTPD.ResponseException;
+import org.hw.sml.server.SmlServer;
 import org.hw.sml.support.LoggerHelper;
 import org.hw.sml.support.ioc.BeanHelper;
 import org.hw.sml.tools.ClassUtil;
@@ -117,7 +121,7 @@ public class Context {
 		return source;
 	}
 	public static Response doService(IHTTPSession session) throws Exception,ResponseException{
-		LoggerHelper.debug(Context.class," "+session.getMethod().name()+",URI:["+session.getUri()+"] --");
+		LoggerHelper.debug(Context.class,session.getRemoteIpAddress()+"|"+session.getMethod().name()+",URI:["+session.getUri()+"] --");
 		Map<String, String> files = new HashMap<String, String>();
         org.hw.sml.server.NanoHTTPD.Method md = session.getMethod();
         if (md.name().equalsIgnoreCase("POST")) {
@@ -141,6 +145,16 @@ public class Context {
 			}
 			contextPath=contextPath.startsWith("/")?contextPath:("/"+contextPath);
 			source=source.replaceFirst(contextPath, "");
+		}
+		String statisSource=source.substring(source.lastIndexOf("/")+1);
+		if(statisSource.contains(".")){
+			String suffix=statisSource.substring(statisSource.lastIndexOf(".")+1);
+				try {
+					String filepath=BeanHelper.getBean(SmlServer.class).getWebapp()+source;
+					return NanoHTTPD.newChunkedResponse(Status.OK,NanoHTTPD.mimeTypes().get(suffix)==null?NanoHTTPD.MIME_PLAINTEXT:NanoHTTPD.mimeTypes().get(suffix),new FileInputStream(new File(filepath)));
+				} catch (FileNotFoundException e) {
+					return NanoHTTPD.newFixedLengthResponse(Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT,source+" not found!");
+				}
 		}
 		Source urlSource=checkPath(source);
 		if(urlSource==null){
@@ -209,6 +223,7 @@ public class Context {
 		} catch (InvocationTargetException e) {
 			 throw new ResponseException(Status.INTERNAL_ERROR,e.getTargetException().getMessage());
 		}catch(Exception e){
+			e.printStackTrace();
 			throw new ResponseException(Status.INTERNAL_ERROR,e.getMessage());
 		}
 	}

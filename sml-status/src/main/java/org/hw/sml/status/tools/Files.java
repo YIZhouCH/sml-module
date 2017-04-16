@@ -15,8 +15,8 @@ public class Files {
 		return RegexUtils.matchGroup(regexp, line).size()>0;
 	}
 
-	public static Map<Long,String> readLastNLine(File file, Charset charset,int numRead,int from,String regexp) {
-		Map<Long,String> result=MapUtils.newLinkedHashMap();
+	public static Map<String,String> readLastNLine(File file, Charset charset,int numRead,int from,String regexp) {
+		Map<String,String> result=MapUtils.newLinkedHashMap();
 		int count = 0;
 		if (!file.exists() || file.isDirectory() || !file.canRead()) {
 			return result;
@@ -35,7 +35,7 @@ public class Files {
 					if (fileRead.readByte() == '\n') {
 						String line = new String(fileRead.readLine().getBytes("iso-8859-1"), charset);
 						if(regexp==null||regexp.length()==0||in(line, regexp)){
-							result.put(pos,line);count++;
+							result.put(pos+"",line);count++;
 						}
 						if (count == numRead)break;
 					}
@@ -45,7 +45,7 @@ public class Files {
 					fileRead.seek(0);
 					String line = new String(fileRead.readLine().getBytes("iso-8859-1"), charset);
 					if(regexp==null||regexp.length()==0||in(line, regexp)){
-						result.put(pos,line);count++;
+						result.put(pos+"",line);count++;
 					}
 				}
 			}
@@ -62,10 +62,10 @@ public class Files {
 		return result;
 	}
 	public static String readLastNLineString(File file,Charset charset,int numRead,int from,String regexp){
-		Map<Long,String> rt=readLastNLine(file, charset, numRead, from, regexp);
+		Map<String,String> rt=readLastNLine(file, charset, numRead, from, regexp);
 		StringBuilder sb=new StringBuilder();
 		int i=0;
-		for(Map.Entry<Long,String> entry:rt.entrySet()){
+		for(Map.Entry<String,String> entry:rt.entrySet()){
 			if(i++>0)
 			sb.insert(0,"\n");
 			sb.insert(0,entry.getValue());

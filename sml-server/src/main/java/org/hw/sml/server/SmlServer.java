@@ -15,6 +15,8 @@ public class SmlServer{
 	
 	private int timeout=2*60*1000;
 	
+	private String webapp="./src/webapp/";
+	
 	public SmlServer(int port) {
 		super();
 		this.port = port;
@@ -44,4 +46,27 @@ public class SmlServer{
 	public void setDaemon(boolean daemon) {
 		this.daemon = daemon;
 	}
+	public int getPort() {
+		return port;
+	}
+	public void setPort(int port) {
+		this.port = port;
+	}
+	public int getTimeout() {
+		return timeout;
+	}
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
+	}
+	public String getWebapp() {
+		if(webapp.endsWith("/")){
+			webapp=webapp.substring(0,webapp.length()-1);
+		}
+		return webapp;
+	}
+	public void setWebapp(String webapp) {
+		this.webapp = webapp;
+	}
+	
+	
 }
