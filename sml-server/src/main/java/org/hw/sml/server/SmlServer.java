@@ -17,6 +17,8 @@ public class SmlServer{
 	
 	private String webapp="./src/webapp/";
 	
+	private String keepAlive="true";
+	
 	public SmlServer(int port) {
 		super();
 		this.port = port;
@@ -37,6 +39,7 @@ public class SmlServer{
 				} 
 			}
 		};
+		NanoHTTPD.keepAliveNano=keepAlive;
 		httpd.start(timeout, daemon);
 		LoggerHelper.info(getClass(),"nanohttp server bind-->["+port+"],daemon:["+daemon+"],timeout:["+timeout+"]");
 	}
@@ -67,6 +70,13 @@ public class SmlServer{
 	public void setWebapp(String webapp) {
 		this.webapp = webapp;
 	}
+	public String getKeepAlive() {
+		return keepAlive;
+	}
+	public void setKeepAlive(String keepAlive) {
+		this.keepAlive = keepAlive;
+	}
+	
 	
 	
 }

@@ -53,8 +53,10 @@ public class ServerResource {
 	@SmlResource("proxy/(.*?)")
 	public Object proxy(IHTTPSession session) throws ResponseException, Exception{
 		String uri=session.getUri().replace("/"+SystemHelper.getServerContextPath()+"/server/proxy/","");
+		String httpUrl=session.getParms().get("realUrl");
 		String serverContextPath=uri.split("/")[0];
-		String httpUrl=ProxyRouter.getProxyUrl(MapUtils.getInt(session.getParms(),"expires",65)*1000,sources, serverContextPath);
+		if((httpUrl==null||httpUrl.length()==0))
+		       httpUrl=ProxyRouter.getProxyUrl(MapUtils.getInt(session.getParms(),"expires",65)*1000,sources, serverContextPath);
 		if(httpUrl==null){
 			throw new NanoHTTPD.ResponseException(Status.NOT_FOUND,"source not found or expired!");
 		}

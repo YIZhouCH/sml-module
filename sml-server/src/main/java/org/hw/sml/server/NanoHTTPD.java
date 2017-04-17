@@ -69,6 +69,8 @@ import org.hw.sml.support.LoggerHelper;
 
 
 public abstract class NanoHTTPD {
+	
+	public static String keepAliveNano="true";
 
     /**
      * Pluggable strategy for asynchronously executing requests.
@@ -90,6 +92,7 @@ public abstract class NanoHTTPD {
         private final InputStream inputStream;
 
         private final Socket acceptSocket;
+        
 
         public ClientHandler(InputStream inputStream, Socket acceptSocket) {
             this.inputStream = inputStream;
@@ -120,7 +123,7 @@ public abstract class NanoHTTPD {
                 // SocketTimeoutException, print the
                 // stacktrace
                 if (!(e instanceof SocketException && "NanoHttpd Shutdown".equals(e.getMessage())) && !(e instanceof SocketTimeoutException)) {
-                    NanoHTTPD.LOG.log(Level.SEVERE, "Communication with the client broken, or an bug in the handler code", e);
+                    LoggerHelper.error(getClass(), "Communication with the client broken, or an bug in the handler code exception:"+e);
                 }
             } finally {
                 safeClose(outputStream);
@@ -1452,7 +1455,10 @@ public abstract class NanoHTTPD {
                 this.contentLength = totalBytes;
             }
             this.chunkedTransfer = this.contentLength < 0;
-            keepAlive = true;
+            this.keepAlive=Boolean.valueOf(keepAliveNano);
+            if(!this.keepAlive){
+            	addHeader("connection", "close");
+            }
         }
 
         @Override
@@ -2276,5 +2282,6 @@ public abstract class NanoHTTPD {
 	            }
 	        }
 		return rtn;
-	}
+	}	
+    
 }

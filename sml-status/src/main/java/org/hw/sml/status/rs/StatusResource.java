@@ -47,7 +47,7 @@ public class StatusResource {
 			@Param(value="from",defaultValue="0")int from,
 			@Param("words")String word,
 			@Param(value="isText",defaultValue="true")boolean isText){
-		if(filepath==null||filepath.length()==0){
+		if((filepath==null||filepath.length()==0)){
 			File fileDir=new File(SystemHelper.getServerDirLog());
 			if(fileDir.exists()){
 				List<String> files=Arrays.asList(new File(SystemHelper.getServerDirLog()).list());

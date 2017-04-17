@@ -1,16 +1,20 @@
-function buildServerName(server){
-	return 'http://' + server.remoteIp+ ':' + server.serverPort + '/'+ (server.serverContextPath==null?'':server.serverContextPath);
-}
-angular.module('smlApp', []).controller(
+var smlApp=angular.module('smlApp', []);
+smlApp.service('$BuildService',function(){
+	this.build=function(server){
+		return 'http://' + server.remoteIp+ ':' + server.serverPort + '/'+ (server.serverContextPath==null?'':server.serverContextPath);
+	}
+});
+smlApp.controller(
 		'serverCtrl',
-		function($scope, $http) {
+		function($scope, $http,$BuildService,$interval) {
 			$scope.active=0;
 			$scope.unactive=0;
-			$scope.log={url:'./status/log',lastNum:50,charset:'utf-8',words:'',content:'',from:0};
+			$scope.logcontent=''
+			$scope.log={url:'./status/log',lastNum:50,charset:'utf-8',words:'',from:0,realUrl:''};
 			$scope.masterInit=function(){
 				$http.get("./status").then(function(response){
 					var predata=response.data;
-					predata.serverName=buildServerName(predata);
+					predata.serverName=$BuildService.build(predata);
 					$scope.masterServer=predata;
 				});
 			}
@@ -21,7 +25,7 @@ angular.module('smlApp', []).controller(
 							var unactive=0
 							angular.forEach(response.data, function(server,
 									index) {
-								server.serverName = buildServerName(server);
+								server.serverName = $BuildService.build(server);
 								server.status=new Date().getTime()-new Date(server.lastTime).getTime()<65000;
 								if(server.status){
 									active++;
@@ -42,7 +46,8 @@ angular.module('smlApp', []).controller(
 			}
 			
 			$scope.logshow=function(){
-				$http({method:'get','Content-Type':'text/plain',url:$scope.log.url+'?words='+$scope.log.words+'&lastNum='+$scope.log.lastNum+'&isText=false&from='+$scope.log.lastNum+'&charset='+$scope.log.charset}).then(
+				var realUrl=$scope.log.url+'?words='+$scope.log.words+'&lastNum='+$scope.log.lastNum+'&isText=false&from='+$scope.log.lastNum+'&charset='+$scope.log.charset+'&realUrl='+encodeURIComponent($scope.log.realUrl);
+				$http({method:'get',url:realUrl}).then(
 						function(response) {
 							var responseStr='';
 							angular.forEach(response.data,function(value,key){
@@ -50,36 +55,38 @@ angular.module('smlApp', []).controller(
 								$scope.log.from=parseInt(key)+1;
 							});
 							if(responseStr.length>0){
-								if($scope.log.content<5000)
-									$scope.log.content=$scope.log.content+'\n'+responseStr;
+								if($scope.logcontent<5000)
+									$scope.logcontent+='\n'+responseStr;
 								else
-									$scope.log.content=responseStr;
+									$scope.logcontent=responseStr;
 							}
 						});
 			}
 			$scope.reflush=function(time){
-				setInterval(function() {
+				$interval(function() {
 					$scope.init();
 					$scope.masterInit();
 				}, time);
 			}
 			$scope.reflushLog=function(time){
-				setInterval(function() {
+				$interval(function() {
 					$scope.logshow();
 				}, time);
 			}
 			$scope.setLogUrl=function(url){
 				if(angular.isObject(url)){
 					$scope.log.url='./server/proxy/'+url.serverContextPath+'/status/log';
+					$scope.log.realUrl=url.serverName;
 				}else{
 					$scope.log.url=url;
+					$scope.log.realUrl='';
 				}
 				$scope.log.from=0;
-				$scope.log.content='';
+				$scope.logcontent='';
 				$scope.logshow();
 			}
 			$scope.clearLogContent=function(){
-				$scope.log.content='';
+				$scope.logcontent='';
 			}
 			$scope.init();
 			$scope.masterInit();

@@ -40,6 +40,7 @@ public class HelloWorldResource{
 	}
 	@SmlResource("hw")
 	public Object query2(LinkedHashMap<String,Object> map){
+		
 		return map;
 	}
 	@SmlResource("/query")
