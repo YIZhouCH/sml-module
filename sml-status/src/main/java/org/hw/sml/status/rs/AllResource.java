@@ -9,10 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.hw.sml.context.Context;
-import org.hw.sml.context.Context.Source;
 import org.hw.sml.rest.annotation.Param;
 import org.hw.sml.rest.annotation.SmlResource;
+import org.hw.sml.route.Router;
+import org.hw.sml.route.Router.Source;
 import org.hw.sml.server.NanoHTTPD;
 import org.hw.sml.server.NanoHTTPD.IHTTPSession;
 import org.hw.sml.server.NanoHTTPD.Response;
@@ -29,7 +29,7 @@ public class AllResource {
 		Map<String,Object> result=MapUtils.newLinkedHashMap();
 		result.put("contextPath",SystemHelper.getServerContextPath());
 		List<Map<String,Object>> subResult=MapUtils.newArrayList();
-		for(Map.Entry<String,Source> entry:Context.urlMapper.entrySet()){
+		for(Map.Entry<String,Source> entry:Router.urlMapper.entrySet()){
 			Map<String,Object> s=MapUtils.newLinkedHashMap();
 			s.put("uri",entry.getKey());
 			s.put("method",entry.getValue().getRequestMethods());

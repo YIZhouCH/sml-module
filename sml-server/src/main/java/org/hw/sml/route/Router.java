@@ -1,4 +1,4 @@
-package org.hw.sml.context;
+package org.hw.sml.route;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,7 +32,8 @@ import org.hw.sml.tools.MapUtils;
 import org.hw.sml.tools.RegexUtils;
 
 
-public class Context {
+public class Router {
+	private static Class<Router> LOG=Router.class;
 	private static  Map<String,String> urlrewrite=MapUtils.newHashMap();
 	public static class Source{
 		private String[] paths;
@@ -77,7 +78,7 @@ public class Context {
 				String methodValuePath=smlMethodResource.value();
 				String[] paths=getPaths(classValuePath, methodValuePath);
 				urlMapper.put(paths[0],new Source(paths, method,smlMethodResource.method(),bean));
-				LoggerHelper.debug(Context.class,String.format("urlMapper:%s,methodName:%s,parameter:%s",paths[0],method.getName(),Arrays.asList(method.getParameterTypes())));
+				LoggerHelper.debug(LOG,String.format("urlMapper:%s,methodName:%s,parameter:%s",paths[0],method.getName(),Arrays.asList(method.getParameterTypes())));
 			}
 		}
 		Enumeration<Object> es= FrameworkConstant.otherProperties.keys();
@@ -120,8 +121,8 @@ public class Context {
 		}
 		return source;
 	}
-	public static Response doService(IHTTPSession session) throws Exception,ResponseException{
-		LoggerHelper.debug(Context.class,session.getRemoteIpAddress()+"|"+session.getMethod().name()+",URI:["+session.getUri()+"] --");
+	public static Response route(IHTTPSession session) throws Exception,ResponseException{
+		LoggerHelper.debug(LOG,session.getRemoteIpAddress()+"|"+session.getMethod().name()+",URI:["+session.getUri()+"] --");
 		Map<String, String> files = new HashMap<String, String>();
         org.hw.sml.server.NanoHTTPD.Method md = session.getMethod();
         if (md.name().equalsIgnoreCase("POST")) {

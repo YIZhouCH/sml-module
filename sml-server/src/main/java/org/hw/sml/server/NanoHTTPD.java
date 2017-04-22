@@ -1187,7 +1187,6 @@ public abstract class NanoHTTPD {
          * 
          * @deprecated use {@link #getParameters()} instead.
          */
-        @Deprecated
         Map<String, String> getParms();
 
         Map<String, List<String>> getParameters();

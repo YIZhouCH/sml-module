@@ -51,7 +51,7 @@ public class StatusResource {
 			File fileDir=new File(SystemHelper.getServerDirLog());
 			if(fileDir.exists()){
 				List<String> files=Arrays.asList(new File(SystemHelper.getServerDirLog()).list());
-				if(files.size()>0&&files.get(0).contains("-")){
+				if(isLog4j(files)){
 					filepath=SystemHelper.getServerDirLog()+"/debug-"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+".log";
 				}else{
 					filepath=SystemHelper.getServerDirLog()+"/debug.log";
@@ -62,5 +62,14 @@ public class StatusResource {
 		 return Files.readLastNLine(new File(filepath),Charset.forName(charset),lastNum,from,word);
 		else
 		 return Files.readLastNLineString(new File(filepath),Charset.forName(charset),lastNum,from,word);
+	}
+	
+	private boolean isLog4j(List<String> files){
+		for(String file:files){
+			if(file.contains("-")){
+				return false;
+			}
+		}
+		return true;
 	}
 }

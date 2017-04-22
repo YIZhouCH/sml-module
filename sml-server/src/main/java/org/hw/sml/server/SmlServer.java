@@ -2,7 +2,7 @@ package org.hw.sml.server;
 
 import java.io.IOException;
 
-import org.hw.sml.context.Context;
+import org.hw.sml.route.Router;
 import org.hw.sml.server.NanoHTTPD.Response.Status;
 import org.hw.sml.support.LoggerHelper;
 
@@ -27,11 +27,11 @@ public class SmlServer{
 	
 	}
 	public void init() throws IOException{
-		Context.start();
+		Router.start();
 		NanoHTTPD httpd= new NanoHTTPD(port) {
 			public Response serve(IHTTPSession session){
 				try {
-					return Context.doService(session);
+					return Router.route(session);
 				} catch (ResponseException e) {
 					return NanoHTTPD.newResponse(e.getStatus(),NanoHTTPD.MIME_HTML,e.getMessage());
 				}catch (Exception e) {
