@@ -8,12 +8,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hw.sml.FrameworkConstant;
 import org.hw.sml.component.RcptFastJsonMapper;
 import org.hw.sml.rest.annotation.Body;
 import org.hw.sml.rest.annotation.Param;
@@ -27,6 +25,7 @@ import org.hw.sml.server.NanoHTTPD.ResponseException;
 import org.hw.sml.server.SmlServer;
 import org.hw.sml.support.LoggerHelper;
 import org.hw.sml.support.ioc.BeanHelper;
+import org.hw.sml.support.ioc.PropertiesHelper;
 import org.hw.sml.tools.ClassUtil;
 import org.hw.sml.tools.MapUtils;
 import org.hw.sml.tools.RegexUtils;
@@ -35,6 +34,7 @@ import org.hw.sml.tools.RegexUtils;
 public class Router {
 	private static Class<Router> LOG=Router.class;
 	private static  Map<String,String> urlrewrite=MapUtils.newHashMap();
+	public static final String KEY_URLREWRITE="urlrewrite.";
 	public static class Source{
 		private String[] paths;
 		private Method method;
@@ -81,13 +81,9 @@ public class Router {
 				LoggerHelper.debug(LOG,String.format("urlMapper:%s,methodName:%s,parameter:%s",paths[0],method.getName(),Arrays.asList(method.getParameterTypes())));
 			}
 		}
-		Enumeration<Object> es= FrameworkConstant.otherProperties.keys();
-		while(es.hasMoreElements()){
-			String key=es.nextElement().toString();
-			if(key.startsWith("urlrewrite.")){
-				String from=key.substring(11);
-				urlrewrite.put(from,BeanHelper.getValue(key));
-			}
+		for(Map.Entry<String,String> entry:BeanHelper.getBean(PropertiesHelper.class).getValuesByKeyStart(KEY_URLREWRITE).entrySet()){
+			LoggerHelper.debug(LOG,"urlrewrite "+entry.getKey().replaceFirst(KEY_URLREWRITE,"")+"---->"+entry.getValue());
+			urlrewrite.put(entry.getValue(),entry.getKey());
 		}
 	}
 	private static String[] getPaths(String cP,String mP){
@@ -243,7 +239,7 @@ public class Router {
 	}
 	private static String getProduces(Method method){
 		SmlResource sml=method.getAnnotation(SmlResource.class);
-		return sml.produces()+";charset="+sml.charset();
+		return sml.produces()+" ;charset="+sml.charset();
 	}
 	
 }

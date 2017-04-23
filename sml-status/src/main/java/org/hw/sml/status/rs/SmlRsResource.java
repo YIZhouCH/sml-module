@@ -1,6 +1,7 @@
 package org.hw.sml.status.rs;
 
 import org.hw.sml.rest.annotation.SmlResource;
+import org.hw.sml.support.el.ElException;
 import org.hw.sml.support.ioc.BeanHelper;
 import org.hw.sml.support.ioc.annotation.Bean;
 @Bean
@@ -12,7 +13,7 @@ public class SmlRsResource {
 			return BeanHelper.evelV(elp);
 		} catch (IllegalArgumentException e) {
 			return e.toString();
-		} catch (IllegalAccessException e) {
+		} catch (ElException e) {
 			return e.toString();
 		}
 	}
