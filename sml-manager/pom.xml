@@ -23,7 +23,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.hw.sml</groupId>
-			<artifactId>sml-rest</artifactId>
+			<artifactId>sml-server</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>

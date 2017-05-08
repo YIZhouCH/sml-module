@@ -6,6 +6,7 @@ import org.hw.sml.support.ioc.BeanHelper;
 import org.hw.sml.support.ioc.annotation.Bean;
 import org.hw.sml.support.ioc.annotation.Init;
 import org.hw.sml.support.ioc.annotation.Inject;
+import org.hw.sml.support.time.annotation.Scheduler;
 import org.hw.sml.tools.Https;
 
 import com.alibaba.fastjson.JSON;
@@ -21,7 +22,7 @@ public class ClientResource {
 	public void init(){
 		severUrl=BeanHelper.getValue("server.master.url");
 	}
-	
+	@Scheduler(Scheduler.min1)
 	public void task(){
 		try {
 			if(severUrl==null){

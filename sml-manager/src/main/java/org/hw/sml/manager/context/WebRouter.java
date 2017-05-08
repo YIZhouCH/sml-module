@@ -3,8 +3,6 @@ package org.hw.sml.manager.context;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,43 +13,13 @@ import org.hw.sml.rest.annotation.Body;
 import org.hw.sml.rest.annotation.Param;
 import org.hw.sml.rest.annotation.PathParam;
 import org.hw.sml.rest.annotation.SmlResource;
-import org.hw.sml.support.ioc.BeanHelper;
+import org.hw.sml.route.Router;
 import org.hw.sml.tools.ClassUtil;
 import org.hw.sml.tools.MapUtils;
 import org.hw.sml.tools.RegexUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class SmlWebContext {
-	public static final Logger logger=LoggerFactory.getLogger(SmlWebContext.class);
-	private static class Source{
-		private String[] paths;
-		private Method method;
-		private String requestMethods;
-		private Object bean;
-		public Source(String[] paths,Method method,String requestMethods,Object bean){
-			this.paths=paths;
-			this.method=method;
-			this.requestMethods=requestMethods;
-			this.bean=bean;
-		}
-		public String[] getPaths() {
-			return paths;
-		}
-		public Method getMethod() {
-			return method;
-		}
-		public String getRequestMethods() {
-			return requestMethods;
-		}
-		public Object getBean() {
-			return bean;
-		}
-		
-	}
-	
-	private static Map<String,Source> urlMapper=new HashMap<String,Source>();
-	
+
+public class WebRouter extends Router{	
 	private static ThreadLocal<HttpServletRequest> requests=new ThreadLocal<HttpServletRequest>();
 	
 	private static ThreadLocal<HttpServletResponse> responses=new ThreadLocal<HttpServletResponse>();
@@ -69,27 +37,6 @@ public class SmlWebContext {
 	public static void release(){
 		requests.remove();
 		responses.remove();
-	}
-	
-	
-	public static void start(){
-		Map<String,Object> beans=BeanHelper.getBeanMap();
-		for(Map.Entry<String,Object> entry:beans.entrySet()){
-			Object bean=entry.getValue();
-			SmlResource smlResource=bean.getClass().getAnnotation(SmlResource.class);
-			if(smlResource==null) continue;
-			String classValuePath=smlResource.value();
-			Method[] methods=ClassUtil.getMethods(bean.getClass());
-			for(Method method:methods){
-				SmlResource smlMethodResource=method.getAnnotation(SmlResource.class);
-				if(smlMethodResource==null) continue;
-				String methodValuePath=smlMethodResource.value();
-				String[] paths=getPaths(classValuePath, methodValuePath);
-				urlMapper.put(paths[0],new Source(paths, method,smlMethodResource.method(),bean));
-				logger.debug("urlMapper:{},methodName:{},parameter:{}",paths[0],method.getName(),method.getParameterTypes());
-			}
-			
-		}
 	}
 	public static void doService(String requestMethod,String source) throws Throwable{
 		source=source.replace(getCurrentRequest().getContextPath()+"/","");
@@ -163,33 +110,5 @@ public class SmlWebContext {
 		}
 		//
 	}
-	private static Source checkPath(String path){
-		Source source=urlMapper.get(path);
-		if(source==null){
-			for(String urlPath:urlMapper.keySet()){
-				try{
-				String[] pathparams=RegexUtils.matchSubString(urlPath, path);
-				if(pathparams!=null&&pathparams.length>0){
-					return urlMapper.get(urlPath);
-				}
-				}catch(Exception e){
-				}
-			}
-		}
-		return source;
-	}
 	
-	private static String[] getPaths(String cP,String mP){
-		List<String> result=MapUtils.newArrayList();
-		if(cP==null||cP.trim().equals("")){
-			cP="/";
-		}
-		if(mP==null||mP.trim().equals("")){
-			mP="/";
-		}
-		String path=("/"+cP+"/"+mP).replaceAll("/{1,}","/");
-		result.add(path.replaceAll("\\{\\w+\\}", "([\\\\w|\\\\-|:]+)"));
-		result.addAll(RegexUtils.matchGroup("\\{\\w+\\}",path));
-		return result.toArray(new String[0]);
-	}
 }

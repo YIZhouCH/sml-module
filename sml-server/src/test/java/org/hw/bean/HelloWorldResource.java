@@ -35,8 +35,8 @@ public class HelloWorldResource{
 		return path1+":"+path2+":"+a+":"+body;
 	}
 	@SmlResource("hw")
-	public Object query2(LinkedHashMap<String,Object> map){
-		
+	public Object query2(String map,IHTTPSession session){
+		System.out.println(session.getHeaders());
 		return map;
 	}
 	@SmlResource("/query")
@@ -50,7 +50,9 @@ public class HelloWorldResource{
 	}
 	@SmlResource(value="import",produces=SmlResource.TEXT_PLAIN)
 	public String importXls(IHTTPSession session) throws IOException{
-		String filename=session.getFiles().get("file");
+		System.out.println(session.getHeaders());
+		System.out.println(session.getParameters());
+		System.out.println(session.getFiles());
 		return "success";
 	}
 	public static void main(String[] args) {

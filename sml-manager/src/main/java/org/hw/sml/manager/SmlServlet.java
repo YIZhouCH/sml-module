@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hw.sml.manager.context.SmlWebContext;
+import org.hw.sml.manager.context.WebRouter;
 import org.hw.sml.manager.service.SmlManageService;
 import org.hw.sml.manager.tools.WebTools;
 import org.hw.sml.support.ioc.BeanHelper;
@@ -39,7 +39,7 @@ public class SmlServlet extends HttpServlet{
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
-		SmlWebContext.start();
+		WebRouter.start();
 	}
 
 
@@ -61,14 +61,14 @@ public class SmlServlet extends HttpServlet{
 		 String operater=uris[2];
 		 if(!igNoreOperator.contains(operater)){
 			 try{
-				 SmlWebContext.set(request, response);
-				 SmlWebContext.doService(method,uri);
+				 WebRouter.set(request, response);
+				 WebRouter.doService(method,uri);
 			 }catch (Throwable e) {
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				response.getWriter().print(e.getLocalizedMessage());
 				e.printStackTrace();
 			}finally{
-				 SmlWebContext.release();
+				WebRouter.release();
 			}
 			return;
 		 }
@@ -100,7 +100,7 @@ public class SmlServlet extends HttpServlet{
 			}
 			e.printStackTrace();
 		}finally{
-			SmlWebContext.release();
+			WebRouter.release();
 		}
 	}
 	

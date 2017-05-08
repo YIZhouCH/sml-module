@@ -32,8 +32,8 @@ import org.hw.sml.tools.RegexUtils;
 
 
 public class Router {
-	private static Class<Router> LOG=Router.class;
-	private static  Map<String,String> urlrewrite=MapUtils.newHashMap();
+	protected static Class<Router> LOG=Router.class;
+	protected static  Map<String,String> urlrewrite=MapUtils.newHashMap();
 	public static final String KEY_URLREWRITE="urlrewrite.";
 	public static class Source{
 		private String[] paths;
@@ -102,7 +102,7 @@ public class Router {
 		result.addAll(RegexUtils.matchGroup("\\{\\w+\\}",path));
 		return result.toArray(new String[0]);
 	}
-	private static Source checkPath(String path){
+	protected static Source checkPath(String path){
 		Source source=urlMapper.get(path);
 		if(source==null){
 			for(String urlPath:urlMapper.keySet()){

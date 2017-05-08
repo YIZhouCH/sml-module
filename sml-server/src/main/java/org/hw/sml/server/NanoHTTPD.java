@@ -35,6 +35,7 @@ import java.nio.charset.CharsetEncoder;
 import java.security.KeyStore;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -527,7 +528,7 @@ public abstract class NanoHTTPD {
 
         private static final int REQUEST_BUFFER_LEN = 512;
 
-        private static final int MEMORY_STORE_LIMIT = 10240;
+        private static final int MEMORY_STORE_LIMIT = 1024;
 
         public static final int BUFSIZE = 8192;
 
@@ -1039,9 +1040,17 @@ public abstract class NanoHTTPD {
          * Deduce body length in bytes. Either from "content-length" header or
          * read bytes.
          */
-        public long getBodySize() {
+        public long getBodySize() throws ResponseException{
             if (this.headers.containsKey("content-length")) {
-                return Long.parseLong(this.headers.get("content-length"));
+            	try{
+            		long l= Long.parseLong(this.headers.get("content-length"));
+            		if(l<=-1l){
+            			throw new ResponseException(Status.BAD_REQUEST,"error content-length:'"+this.headers.get("content-length")+"'");
+            		}
+            		return l;
+            	}catch(Exception e){
+                	throw new ResponseException(Status.BAD_REQUEST,"error content-length:'"+this.headers.get("content-length")+"'");
+                }
             } else if (this.splitbyte < this.rlen) {
                 return this.rlen - this.splitbyte;
             }

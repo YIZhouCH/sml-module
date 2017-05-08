@@ -14,15 +14,7 @@
 		<table class="table table-striped">
 			<thead>
 				<tr>
-					<th nowrap="nowrap">服务url</th>
-					<th nowrap="nowrap">进程号</th>
-					<th nowrap="nowrap">主机名</th>
-					<th nowrap="nowrap">已用内存(M)</th>
-					<th nowrap="nowrap">总内存(M)</th>
-					<th nowrap="nowrap">内存使用率(%)</th>
-					<th nowrap="nowrap">启动时间</th>
-					<th nowrap="nowrap">活动线程数</th>
-					<th nowrap="nowrap">操作</th>
+					<th nowrap="nowrap" ng-repeat="headerCn in config.headerCns">{{headerCn}}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -50,16 +42,7 @@
 		<table class="table table-striped">
 			<thead>
 				<tr>
-					<th nowrap="nowrap">服务url</th>
-					<th nowrap="nowrap">进程号</th>
-					<th nowrap="nowrap">主机名</th>
-					<th nowrap="nowrap">已用内存(M)</th>
-					<th nowrap="nowrap">总内存(M)</th>
-					<th nowrap="nowrap">内存使用率(%)</th>
-					<th nowrap="nowrap">启动时间</th>
-					<th nowrap="nowrap">线程数</th>
-					<th nowrap="nowrap">状态</th>
-					<th nowrap="nowrap">操作</th>
+					<th nowrap="nowrap" ng-repeat="headerClientCn in config.headerClientCns">{{headerClientCn}}</th>
 				</tr>
 			</thead>
 			<tbody>

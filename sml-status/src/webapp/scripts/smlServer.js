@@ -6,20 +6,29 @@ smlApp.service('$BuildService',function(){
 });
 smlApp.controller(
 		'serverCtrl',
-		function($scope, $http,$BuildService,$interval) {
+		function($scope, $http,$BuildService,$interval,$location) {
+			$scope.config={
+			 headerCns:['服务url','进程号','主机名','已用内存(M)','总内存(M)','内存使用率(%)','启动时间','活动线程数','操作'],
+			 //headerClientCns:['服务url','进程号','主机名','已用内存(M)','总内存(M)','内存使用率(%)','启动时间','活动线程数',"状态",'操作'],
+			 isFlush:true
+			};
+			$scope.config.headerClientCns=angular.copy($scope.config.headerCns);
+			$scope.config.headerClientCns.splice($scope.config.headerClientCns.length-1,0,'状态');
 			$scope.active=0;
 			$scope.unactive=0;
 			$scope.logcontent=''
-			$scope.log={url:'./status/log',lastNum:50,charset:'utf-8',words:'',from:0,realUrl:''};
+			$scope.url='http://'+$location.host()+':'+$location.port()+'/master/';
+			$scope.log={url:$scope.url+'status/log',lastNum:50,charset:'utf-8',words:'',from:0,realUrl:''};
 			$scope.masterInit=function(){
-				$http.get("./status").then(function(response){
+				$http.get($scope.url+"status").then(function(response){
 					var predata=response.data;
 					predata.serverName=$BuildService.build(predata);
 					$scope.masterServer=predata;
+					$scope.config.isFlush=!$scope.config.isFlush;
 				});
 			}
 			$scope.init = function() {
-				$http.get("./server/sources").then(
+				$http.get($scope.url+'server/sources').then(
 						function(response) {
 							var active=0;
 							var unactive=0
@@ -39,7 +48,7 @@ smlApp.controller(
 						});
 			}
 			$scope.remove = function(server) {
-				$http.get('./server/clear?key=' + server.serverName).then(
+				$http.get($scope.url+'server/clear?key=' + server.serverName).then(
 						function(response) {
 							$scope.init();
 						});
@@ -64,18 +73,22 @@ smlApp.controller(
 			}
 			$scope.reflush=function(time){
 				$interval(function() {
-					$scope.init();
-					$scope.masterInit();
+					if($scope.config.isFlush){
+						$scope.init();
+						$scope.masterInit();
+					}
 				}, time);
 			}
 			$scope.reflushLog=function(time){
 				$interval(function() {
-					$scope.logshow();
+					if($scope.config.isFlush){
+						$scope.logshow();
+					}
 				}, time);
 			}
 			$scope.setLogUrl=function(url){
 				if(angular.isObject(url)){
-					$scope.log.url='./server/proxy/'+url.serverContextPath+'/status/log';
+					$scope.log.url=$scope.url+'server/proxy/'+url.serverContextPath+'/status/log';
 					$scope.log.realUrl=url.serverName;
 				}else{
 					$scope.log.url=url;
