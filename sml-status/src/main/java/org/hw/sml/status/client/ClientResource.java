@@ -21,6 +21,7 @@ public class ClientResource {
 	@Init
 	public void init(){
 		severUrl=BeanHelper.getValue("server.master.url");
+		if(severUrl!=null)LoggerHelper.debug(getClass(),String.format("server.master.url[%s]",severUrl));
 	}
 	@Scheduler(Scheduler.min1)
 	public void task(){

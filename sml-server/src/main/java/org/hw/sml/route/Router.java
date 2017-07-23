@@ -26,6 +26,7 @@ import org.hw.sml.server.SmlServer;
 import org.hw.sml.support.LoggerHelper;
 import org.hw.sml.support.ioc.BeanHelper;
 import org.hw.sml.support.ioc.PropertiesHelper;
+import org.hw.sml.tools.Assert;
 import org.hw.sml.tools.ClassUtil;
 import org.hw.sml.tools.MapUtils;
 import org.hw.sml.tools.RegexUtils;
@@ -35,6 +36,7 @@ public class Router {
 	protected static Class<Router> LOG=Router.class;
 	protected static  Map<String,String> urlrewrite=MapUtils.newHashMap();
 	public static final String KEY_URLREWRITE="urlrewrite.";
+	public static final String KEY_URLMAPPER="urlMapper.";
 	public static class Source{
 		private String[] paths;
 		private Method method;
@@ -84,6 +86,21 @@ public class Router {
 		for(Map.Entry<String,String> entry:BeanHelper.getBean(PropertiesHelper.class).getValuesByKeyStart(KEY_URLREWRITE).entrySet()){
 			LoggerHelper.debug(LOG,"urlrewrite "+entry.getKey().replaceFirst(KEY_URLREWRITE,"")+"---->"+entry.getValue());
 			urlrewrite.put(entry.getValue(),entry.getKey());
+		}
+		for(Map.Entry<String,String> entry:BeanHelper.getBean(PropertiesHelper.class).getValuesByKeyStart(KEY_URLMAPPER).entrySet()){
+			try{
+				String key=entry.getKey().replace(KEY_URLMAPPER,"");
+				String[] velp=entry.getValue().split("\\.");
+				Object bean=BeanHelper.getBean(velp[0]);
+				Assert.notNull(bean,entry.getKey()+" bean["+velp[0]+"]not exists!");
+				Method method=ClassUtil.getMethod(bean.getClass(),velp[1],new Class<?>[]{Map.class});
+				method=method==null?ClassUtil.getMethod(bean.getClass(),velp[1],null):method;
+				Assert.notNull(method,entry.getKey()+" method["+velp[1]+"]not exists!");
+				urlMapper.put(key,new Source(getPaths("/",key),method,"",bean));
+				LoggerHelper.debug(LOG,String.format("urlMapper:%s,methodName:%s,parameter:%s",key,method.getName(),Arrays.asList(method.getParameterTypes())));
+			}catch(Exception e){
+				LoggerHelper.error(LOG,entry.getKey()+" config error["+entry.getValue()+"] like ["+e+"]");
+			}
 		}
 	}
 	private static String[] getPaths(String cP,String mP){
@@ -230,6 +247,7 @@ public class Router {
 	 * @param name
 	 * @return
 	 */
+	@SuppressWarnings("deprecation")
 	private static String getParamter(IHTTPSession session,String name){
 		String result=session.getParms().get(name);
 		if(result==null){
@@ -239,7 +257,12 @@ public class Router {
 	}
 	private static String getProduces(Method method){
 		SmlResource sml=method.getAnnotation(SmlResource.class);
+		if(sml==null){
+			return SmlResource.APPLICATION_JSON+";charset=utf-8";
+		}
 		return sml.produces()+" ;charset="+sml.charset();
 	}
-	
+	public static void main(String[] args) {
+		System.out.println("helloworld.go".split("\\.").length);
+	}
 }

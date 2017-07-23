@@ -35,7 +35,6 @@ import java.nio.charset.CharsetEncoder;
 import java.security.KeyStore;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -1157,7 +1156,8 @@ public abstract class NanoHTTPD {
 
         @Override
         public String getRemoteIpAddress() {
-            return this.remoteIp;
+        	String ip= getIpAddress(this);
+        	return ip==null?this.remoteIp:ip;
         }
 
         @Override
@@ -1168,6 +1168,11 @@ public abstract class NanoHTTPD {
 		@Override
 		public Map<String, String> getFiles() {
 			return this.files;
+		}
+
+		@Override
+		public String getBody() {
+			return getFiles().get("postData");
 		}
     }
 
@@ -1228,6 +1233,8 @@ public abstract class NanoHTTPD {
          * @return the hostname.
          */
         String getRemoteHostName();
+        
+        String getBody();
     }
 
     /**
@@ -2291,5 +2298,41 @@ public abstract class NanoHTTPD {
 	        }
 		return rtn;
 	}	
+    public final static String getIpAddress(IHTTPSession request){  
+    	String ip = null;
+    	try{
+    		ip = request.getHeaders().get("X-Forwarded-For".toLowerCase());  
+            if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {  
+                if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {  
+                    ip = request.getHeaders().get("Proxy-Client-IP".toLowerCase());  
+                }  
+                if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {  
+                    ip = request.getHeaders().get("WL-Proxy-Client-IP".toLowerCase());  
+                }  
+                if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {  
+                    ip = request.getHeaders().get("HTTP_CLIENT_IP".toLowerCase());  
+                }  
+                if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {  
+                    ip = request.getHeaders().get("HTTP_X_FORWARDED_FOR".toLowerCase());  
+                }  
+                if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {  
+                    ip = null;
+                }  
+            } else if (ip.length() > 15) {  
+                String[] ips = ip.split(",");  
+                for (int index = 0; index < ips.length; index++) {  
+                    String strIp = (String) ips[index];  
+                    if (!("unknown".equalsIgnoreCase(strIp))) {  
+                        ip = strIp;  
+                        break;  
+                    }  
+                }  
+            }  
+    	}catch(Throwable t){
+    		t.printStackTrace();
+    	}
+        
+        return ip;  
+    }  
     
 }

@@ -51,7 +51,7 @@ public class StatusResource {
 			File fileDir=new File(SystemHelper.getServerDirLog());
 			if(fileDir.exists()){
 				List<String> files=Arrays.asList(new File(SystemHelper.getServerDirLog()).list());
-				if(isLog4j(files)){
+				if(!isLog4j(files)){
 					filepath=SystemHelper.getServerDirLog()+"/debug-"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+".log";
 				}else{
 					filepath=SystemHelper.getServerDirLog()+"/debug.log";

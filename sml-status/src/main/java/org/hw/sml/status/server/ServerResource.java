@@ -81,6 +81,7 @@ public class ServerResource {
 			if(blacklist.contains(entry.getKey().toLowerCase())) continue;
 			https.getHeader().put(entry.getKey(),entry.getValue());
 		}
+		https.getHeader().put("x-forwarded-for",session.getRemoteIpAddress());
 		String result;
 		try {
 			result = https.execute();

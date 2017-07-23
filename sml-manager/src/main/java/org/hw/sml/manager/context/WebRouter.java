@@ -76,7 +76,7 @@ public class WebRouter extends Router{
 						String pathParamName=((PathParam)at).value();
 						params[i]=pathUrlParams.get(pathParamName);
 					}else if(at.annotationType().isAssignableFrom(Param.class)){
-						String pv=getCurrentRequest().getParameter(((Param)at).value());
+						String pv=getParamer(((Param)at).value());
 						params[i]=ClassUtil.convertValueToRequiredType((pv==null?((Param)at).defaultValue():pv),clazz);
 					}else if(at.annotationType().isAssignableFrom(Body.class)){
 						if(method.equals(SmlResource.GET)){
@@ -110,5 +110,11 @@ public class WebRouter extends Router{
 		}
 		//
 	}
-	
+	private static String getParamer(String name){
+		String v=getCurrentRequest().getParameter(name);
+		if(v==null){
+			v=getCurrentRequest().getHeader(name);
+		}
+		return v;
+	}
 }
