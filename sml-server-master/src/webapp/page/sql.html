@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../css/bootstrap.min.css">
+<script src="../js/angular.min.js"></script>
+<script src="../scripts/sqlServer.js"></script>
+</head>
+<body ng-app="sqlApp" ng-controller="serverCtrl">
+	<div class="container">
+		<button class="btn btn-success">
+			<span class="glyphicon glyphicon-cloud"></span>数据库操作
+		</button>
+		    最大返回:<input type="text" ng-model='requestBody.maxSize' style='width:5%' class="input-xlarge">
+			类型: <select ng-init="selectedName = queryType" ng-model="queryType" ng-options="qt for qt in qts"></select>
+			库: <select ng-init="selectedName = requestBody.dbid" ng-model="requestBody.dbid" ng-options="ds for ds in dss" ng-change="dbchange()"></select>
+			表: <select ng-init="selectedName = table" ng-model="table" ng-options="tb.TABLE_NAME for tb in tables"></select>
+			<button class="btn-success" ng-click="execute()">
+							<span class="glyphicon glyphicon-console">&nbsp;执行</span>
+			</button>
+		<div>
+			<textarea rows="15"  style="width:100%" ng-model="requestBody.sql">
+				{{requestBody.sql}}
+			</textarea>
+		</div>
+		<button class="btn btn-success">
+			<span class="glyphicon glyphicon-cloud"></span>返回结果
+		</button>
+		<div ng-model="responseBody" style="color:#F00">{{responseBody}}</div>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th nowrap="nowrap" ng-repeat="(key,value) in data">{{key}}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="dt in datas">
+					<td ng-repeat="(key,value) in dt"=>{{ value}}</td>
+				</tr>
+			</tbody>
+		</table>
+		<hr>
+		<div class="muted">
+		 	Copyright &copy; 2017-2018&nbsp;service-manager&nbsp;&nbsp;All&nbsp;&nbsp; Rights&nbsp;&nbsp; Reserved.&nbsp;<strong>eastcom-sw</strong>&nbsp;&nbsp;<strong>author:hw</strong>
+		</div>
+	</div>
+</body>
+</html>

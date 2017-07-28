@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -71,7 +72,16 @@ public class ExcelParser extends ExcelBaseParser{
 		return ss.toArray(new String[]{});
 	}
 	private  Object getValue(Cell cell) {
+		//CELL_TYPE_NUMERIC 数值型 0
+		//CELL_TYPE_STRING 字符串型 1
+		//CELL_TYPE_FORMULA 公式型 2
+		//CELL_TYPE_BLANK 空值 3
+		//CELL_TYPE_BOOLEAN 布尔型 4
+		//CELL_TYPE_ERROR 错误 5
 		try{
+			if(DateUtil.isCellDateFormatted(cell)){
+				return cell.getDateCellValue();
+			}
 			return cell.getStringCellValue();
 		}catch(Exception e){
 		}
@@ -79,10 +89,7 @@ public class ExcelParser extends ExcelBaseParser{
 			return cell.getNumericCellValue();
 		}catch(Exception e){
 		}
-		try{
-			return cell.getDateCellValue();
-		}catch(Exception e){
-		}
+		
 		try{
 			return cell.toString();
 		}catch(Exception e){

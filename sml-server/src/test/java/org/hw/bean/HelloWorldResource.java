@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.hw.sml.core.SqlMarkupAbstractTemplate;
 import org.hw.sml.rest.annotation.Body;
@@ -54,6 +54,9 @@ public class HelloWorldResource{
 		System.out.println(session.getParameters());
 		System.out.println(session.getFiles());
 		return "success";
+	}
+	public Object go(Map<String,String> obj){
+		return this.getClass().getSimpleName();
 	}
 	public static void main(String[] args) {
 		BeanHelper.start();

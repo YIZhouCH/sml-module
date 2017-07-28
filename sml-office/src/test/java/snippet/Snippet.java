@@ -22,7 +22,7 @@ public class Snippet {
 			creater.setHeadNames(new String[]{"列1111111111111111111","列2","列3","列4"});
 			creater.setPropertyNames(new String[]{"a","b","c","d"});
 			//着色
-			creater.setFilename("d:/temp.xls");
+			creater.setFilename("d:/temp.xlsx");
 			creater.setCreator("黄文");
 			creater.setSheetName("sheetname1");
 			creater.setTitle("标题");

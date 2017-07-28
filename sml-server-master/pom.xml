@@ -1,18 +1,39 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.hw</groupId>
-		<artifactId>parent</artifactId>
-		<version>1.0-SNAPSHOT</version>
-	</parent>
-	<groupId>org.hw.sml</groupId>
-	<artifactId>sml-status</artifactId>
-	<description>sml-status 模块</description>
+	<groupId>com.eastcom_sw.sml</groupId>
+	<artifactId>sml-server-master</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<properties>
+		<!-- 主要依赖库的版本定义 -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<repositories>
+		<repository>
+			<id>hw-snapshots</id>
+			<name>hw-snapshots</name>
+			<url>http://23.247.25.117:8081/nexus/content/repositories/snapshots</url>
+		</repository>
+		<repository>
+			<id>hw-releases</id>
+			<name>hw-releases</name>
+			<url>http://23.247.25.117:8081/nexus/content/repositories/releases</url>
+		</repository>
+		<repository>
+    		<id>thirdparty</id>
+    		<url>http://23.247.25.117:8081/nexus/content/repositories/thirdparty</url>
+ 		 </repository>
+	</repositories>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.hw.sml</groupId>
-			<artifactId>sml-server</artifactId>
+			<artifactId>sml-status</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hw.sml</groupId>
+			<artifactId>sml-helper-jdbc-plugin</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -42,10 +63,7 @@
 			<artifactId>commons-pool</artifactId>
 			<version>1.6</version>
 		</dependency>
-		<dependency>
-			<groupId>org.hw.sml</groupId>
-			<artifactId>sml-helper-jdbc-plugin</artifactId>
-			<version>1.0-SNAPSHOT</version>
-		</dependency>
+		
 	</dependencies>
+	
 </project>

@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.eastcom_sw.lsm</groupId>
-	<artifactId>lsm</artifactId>
+	<artifactId>httpd</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<properties>
 		<!-- 主要依赖库的版本定义 -->
@@ -21,19 +21,19 @@
 			<url>http://23.247.25.117:8081/nexus/content/repositories/releases</url>
 		</repository>
 		<repository>
-    		<id>thirdparty</id>
-    		<url>http://23.247.25.117:8081/nexus/content/repositories/thirdparty</url>
- 		 </repository>
+			<id>thirdparty</id>
+			<url>http://23.247.25.117:8081/nexus/content/repositories/thirdparty</url>
+		</repository>
 	</repositories>
 	<build>
-		<finalName>jklsm</finalName>
+		<finalName>httpd</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>maven-jetty-plugin</artifactId>
 				<version>6.1.26</version>
 				<configuration>
-					<contextPath>jklsm</contextPath>
+					<contextPath>httpd</contextPath>
 					<webDefaultXml>src/main/webapp/WEB-INF/web.xml</webDefaultXml>
 					<webDefaultXml>src/main/webapp/WEB-INF/webdefault.xml</webDefaultXml>
 					<connectors>
@@ -91,14 +91,67 @@
 			<version>1.6</version>
 		</dependency>
 		<dependency>
-		  <groupId>com.oracle</groupId>
-		  <artifactId>ojdbc</artifactId>
-		  <version>11</version>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc</artifactId>
+			<version>11</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hw.sml</groupId>
 			<artifactId>sml-manager</artifactId>
 			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.jsqlparser</groupId>
+			<artifactId>jsqlparser</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>4.2.1.RELEASE</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>4.2.1.RELEASE</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>4.2.1.RELEASE</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>4.2.1.RELEASE</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>4.2.1.RELEASE</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-expression</artifactId>
+			<version>4.2.1.RELEASE</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>4.2.1.RELEASE</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>4.2.1.RELEASE</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.hw.sml</groupId>
@@ -112,6 +165,10 @@
 				<exclusion>
 					<groupId>org.apache.poi</groupId>
 					<artifactId>poi</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.sf.opencsv</groupId>
+					<artifactId>opencsv</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
