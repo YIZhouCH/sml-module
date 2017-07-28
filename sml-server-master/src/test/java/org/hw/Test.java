@@ -4,7 +4,11 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.Map;
 
+import org.hw.sml.rest.annotation.Body;
+import org.hw.sml.rest.annotation.Param;
+import org.hw.sml.rest.annotation.PathParam;
 import org.hw.sml.rest.annotation.SmlResource;
+import org.hw.sml.server.NanoHTTPD.IHTTPSession;
 import org.hw.sml.support.ioc.annotation.Bean;
 import org.hw.sml.support.time.StopWatch;
 import org.hw.sml.tools.Https;
@@ -424,9 +428,13 @@ public class Test {
 		System.out.println(sw.prettyPrint());
 		return result;
 	}
+	@SmlResource("test/{name}")
+	public Object test(@Param("user-agent") String request,@PathParam("name")String name,@Param("age")String age,IHTTPSession session){
+		return name+age+request;
+	}
 
 	public static void main(String[] args) throws IOException {
-		Https https=Https.newPostBodyHttps("http://localhost:1202/master/test/proxy98").body("{}");
+		Https https=Https.newGetHttps("http://localhost:1202/master/test/test/huangwen?age=27").body("{}");
 		https.connectTimeout(1000);
 		https.withReadTimeout(400);
 		Object result= https.execute();

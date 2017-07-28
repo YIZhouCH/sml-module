@@ -10,6 +10,5 @@ public class RcptFastJsonMapper implements JsonMapper{
 	}
 	public String toJson(Object obj) {
 			return JSON.toJSONString(obj);
-	
 	}
 }
