@@ -17,10 +17,10 @@ smlApp.controller(
 			$scope.active=0;
 			$scope.unactive=0;
 			$scope.logcontent=''
-			$scope.url='http://'+$location.host()+':'+$location.port()+'/master/';
-			$scope.log={url:$scope.url+'status/log',lastNum:50,charset:'utf-8',words:'',from:0,realUrl:''};
+			//$scope.url='http://'+$location.host()+':'+$location.port()+'/master/';
+			$scope.log={url:'./status/log',lastNum:50,charset:'utf-8',words:'',from:0,realUrl:''};
 			$scope.masterInit=function(){
-				$http.get($scope.url+"status").then(function(response){
+				$http.get("./status").then(function(response){
 					var predata=response.data;
 					predata.serverName=$BuildService.build(predata);
 					$scope.masterServer=predata;
@@ -28,7 +28,7 @@ smlApp.controller(
 				});
 			}
 			$scope.init = function() {
-				$http.get($scope.url+'server/sources').then(
+				$http.get('./server/sources').then(
 						function(response) {
 							var active=0;
 							var unactive=0
@@ -48,7 +48,7 @@ smlApp.controller(
 						});
 			}
 			$scope.remove = function(server) {
-				$http.get($scope.url+'server/clear?key=' + server.serverName).then(
+				$http.get('./server/clear?key=' + server.serverName).then(
 						function(response) {
 							$scope.init();
 						});
@@ -88,7 +88,7 @@ smlApp.controller(
 			}
 			$scope.setLogUrl=function(url){
 				if(angular.isObject(url)){
-					$scope.log.url=$scope.url+'server/proxy/'+url.serverContextPath+'/status/log';
+					$scope.log.url='./server/proxy/'+url.serverContextPath+'/status/log';
 					$scope.log.realUrl=url.serverName;
 				}else{
 					$scope.log.url=url;
