@@ -23,9 +23,14 @@ public class Main {
 		System.out.println(DateTools.sdf_mis.format(new Date()));
 	}
 	@Scheduler("min1")
-	public void task2() throws UnknownHostException{
-		Object obj=BeanHelper.getBean(StatusResource.class).status();
+	public void task2() throws UnknownHostException, InterruptedException{
+		Object obj=null;
+		StatusResource sr=BeanHelper.getBean(StatusResource.class);
+		for(int i=0;i<10000;i++){
+		 obj=sr.status();
+		}
 		LoggerHelper.debug(getClass(),obj.toString());
+		Thread.sleep(100000);
 	}
 	public static void main(String[] args) {
 		BeanHelper.start();

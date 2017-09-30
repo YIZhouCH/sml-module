@@ -434,10 +434,14 @@ public class Test {
 	}
 
 	public static void main(String[] args) throws IOException {
-		Https https=Https.newGetHttps("http://localhost:1202/master/test/test/huangwen?age=27").body("{}");
+		Https https=Https.newPostHttps("http://localhost:1202/master/server/regist");
 		https.connectTimeout(1000);
 		https.withReadTimeout(400);
+		https.getHeader().put("x-forwarded-for", "192.168.1.122");
 		Object result= https.execute();
 		System.out.println(result);
+		System.out.println(https.getResponseStatus());
+		System.out.println(https.getResponseMessage());
+		System.out.println(https.getResponseHeader().getHeader());
 	}
 }

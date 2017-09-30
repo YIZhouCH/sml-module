@@ -51,6 +51,7 @@ public class SmlServlet extends HttpServlet{
 		 request.setCharacterEncoding(this.postCharset);
 		 String method=request.getMethod();
 		 String uri=request.getRequestURI();
+		 uri.replaceAll("/{2,}","/");
 		 logger.debug("sml request method[{}]-uri[{}]",method,uri);
 		 String[] uris=WebTools.getUris(uri);
 		 //2开始

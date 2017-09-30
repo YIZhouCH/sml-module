@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.hw.sml.tools.Https;
 import org.hw.sml.tools.MapUtils;
 import org.hw.sml.tools.Maps;
 
@@ -205,7 +206,6 @@ public class WebTools {
 		Map<String,String> result=MapUtils.newHashMap();
 		String filePath = null;
 		boolean isFile = ServletFileUpload.isMultipartContent(request);
-		
 		if(!isFile){
 			throw new Exception("Selected file is error!");
 		}else{
@@ -232,7 +232,7 @@ public class WebTools {
 	            }
 	           
 	        } catch (Exception ex) {
-	        	throw new Exception("Upload file fail");
+	        	throw new Exception("Upload file fail error like ["+ex+"]");
 	        }
 		}
 		result.put("filePath", filePath);
@@ -273,11 +273,4 @@ public class WebTools {
 		response.setHeader("Connection", "close");
 		response.setHeader("Content-Type", "application/octet-stream");
     }
-	public static void main(String[] args) {
-		Map map=new Maps<String,Object>().put("a","b").put("c",new Maps<String,Object>().put("d",'e').getMap()).getMap();
-		Map<String,Object> result=MapUtils.newLinkedHashMap();
-		result.put("f",map);
-		result.put("g",Arrays.asList(map,map,map));
-		System.out.println(formatJson(toJson(result)));
-	}
 }
