@@ -13,10 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.hw.sml.manager.context.WebRouter;
 import org.hw.sml.manager.service.SmlManageService;
 import org.hw.sml.manager.tools.WebTools;
+import org.hw.sml.support.LoggerHelper;
 import org.hw.sml.support.ioc.BeanHelper;
 import org.hw.sml.tools.MapUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SmlServlet extends HttpServlet{
 	public static List<String> igNoreOperator=MapUtils.newArrayList();
@@ -28,7 +27,6 @@ public class SmlServlet extends HttpServlet{
 		igNoreOperator.add("update");
 		
 	}
-	public static final Logger logger=LoggerFactory.getLogger(SmlServlet.class);
 	/**
 	 * 
 	 */
@@ -52,7 +50,7 @@ public class SmlServlet extends HttpServlet{
 		 String method=request.getMethod();
 		 String uri=request.getRequestURI();
 		 uri.replaceAll("/{2,}","/");
-		 logger.debug("sml request method[{}]-uri[{}]",method,uri);
+		 LoggerHelper.debug(getClass(),String.format("sml request method[{}]-uri[{}]",method,uri));
 		 String[] uris=WebTools.getUris(uri);
 		 //2开始
 		 if(uris.length<3){

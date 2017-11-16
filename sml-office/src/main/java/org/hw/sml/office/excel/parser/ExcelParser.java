@@ -6,13 +6,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 public class ExcelParser extends ExcelBaseParser{
 
@@ -22,9 +20,11 @@ public class ExcelParser extends ExcelBaseParser{
 		Workbook book=null;
 		
 		if(this.type.equals(Type.xls))
-			book = new HSSFWorkbook(inputStream);
+			//book = new HSSFWorkbook(inputStream);
+			book = WorkbookFactory.create(inputStream);
 		else
-			book = new XSSFWorkbook(inputStream);
+			//book = new XSSFWorkbook(inputStream);
+			book = WorkbookFactory.create(inputStream);
 		
 		Sheet sheet=null;
 		int size=0;
@@ -72,36 +72,30 @@ public class ExcelParser extends ExcelBaseParser{
 		return ss.toArray(new String[]{});
 	}
 	private  Object getValue(Cell cell) {
-		//CELL_TYPE_NUMERIC 数值型 0
-		//CELL_TYPE_STRING 字符串型 1
-		//CELL_TYPE_FORMULA 公式型 2
-		//CELL_TYPE_BLANK 空值 3
-		//CELL_TYPE_BOOLEAN 布尔型 4
-		//CELL_TYPE_ERROR 错误 5
 		try{
-			if(DateUtil.isCellDateFormatted(cell)){
-				return cell.getDateCellValue();
-			}
-			return cell.getStringCellValue();
+			return cell.getStringCellValue().trim();
 		}catch(Exception e){
 		}
 		try{
 			return cell.getNumericCellValue();
 		}catch(Exception e){
 		}
-		
 		try{
-			return cell.toString();
+			return cell.getDateCellValue();
+		}catch(Exception e){
+		}
+		try{
+			return cell.toString().trim();
 		}catch(Exception e){
 		}
 		return null;
 	}
 	
 	public static void main(String[] args) throws Exception {
-		ExcelBaseParser parser=new ExcelParser();
-		parser.setFilename("D:/excel/20160412/本省内容满足率(日报)(2016-04-11).xls");
-		parser.setxStart(1);
-		parser.setHeadNames(new String[]{"time","field1"});
+		ExcelBaseParser parser=new ExcelParser();//修改测试示例，没有提交
+		parser.setFilename("F:/exe.xlsx");
+		parser.setxStart(0);
+		parser.setHeadNames(new String[]{"field1","field2","field3"});
 		parser.init();
 		parser.execute();
 		System.out.println(parser.getDatas());

@@ -10,7 +10,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hw.sml.tools.ClassUtil;
 import org.hw.sml.tools.RegexUtils;
 
 public class Excel07Creater extends ExcelBaseCreater {
@@ -18,8 +19,7 @@ public class Excel07Creater extends ExcelBaseCreater {
 	@Override
 	public void execute() throws Exception {
 		int start=0,limit=20000,totalCount=0;
-			Workbook wb = new SXSSFWorkbook();
-			((SXSSFWorkbook)wb).setCompressTempFiles(true); 
+			Workbook wb = new XSSFWorkbook();
 			/**工作簿创建好*/
 			Sheet sheet = wb.createSheet(sheetName);
 			sheet.setDefaultColumnWidth(10);
@@ -82,8 +82,9 @@ public class Excel07Creater extends ExcelBaseCreater {
 		    			for(int n=0;n<propertyNames.length;n++){
 		    				Cell fc=row.createCell(n);
 		    				String value=String.valueOf(record.get(propertyNames[n]));
-		    				if(RegexUtils.isNumber(value)){
-	    	            		fc.setCellValue(Double.parseDouble((value)));
+		    				if(value.trim().length()>0&&RegexUtils.isNumber(value)){
+		    					Double d=(Double) ClassUtil.convertValueToRequiredType(value,Double.class);
+	    	            		fc.setCellValue(d);
 	    	            	}else{
 	    	            		fc.setCellValue(value.equals("null")?"":value);
 	    	            	}
@@ -93,7 +94,6 @@ public class Excel07Creater extends ExcelBaseCreater {
 		           start += limit;
 		        } while (!data.isEmpty() && data.size() == limit&&retriver!=null);
 			 wb.write(outputStream);
-			 ((SXSSFWorkbook)wb).dispose();
 		if(outputStream!=null)
 			outputStream.close();
 	}

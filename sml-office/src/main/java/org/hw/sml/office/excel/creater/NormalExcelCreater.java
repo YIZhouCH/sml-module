@@ -15,7 +15,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hw.sml.tools.RegexUtils;
 
 import au.com.bytecode.opencsv.CSVWriter;
@@ -29,8 +29,7 @@ public class NormalExcelCreater extends ExcelBaseCreater{
 			if(this.type.equals(Type.xls))
 				wb = new HSSFWorkbook();
 			else{
-				wb = new SXSSFWorkbook();
-				((SXSSFWorkbook)wb).setCompressTempFiles(true); 
+				wb = new XSSFWorkbook();
 			}
 			/**工作簿创建好*/
 			Sheet sheet = wb.createSheet(sheetName);
@@ -105,9 +104,6 @@ public class NormalExcelCreater extends ExcelBaseCreater{
 		           start += limit;
 		        } while (!data.isEmpty() && data.size() == limit&&retriver!=null);
 			 wb.write(outputStream);
-			 if(type.equals(Type.xlsx)){
-				 ((SXSSFWorkbook)wb).dispose();
-			 }
 		}else{
 			CSVWriter cw;
 	        Writer outWriter = new BufferedWriter(new OutputStreamWriter(outputStream, Charset.forName("GBK")));

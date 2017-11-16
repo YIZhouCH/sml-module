@@ -20,7 +20,7 @@ function formatJsonToParam(paramStr, paramTextArea_Id, paramDivArea_Id){
 				if(parseInt(enabled)){
 					paramDiv = '<label style="margin-bottom: 0px; color: red">*&nbsp&nbsp</label>';
 				}
-				htmlStr += '<div id="div_'+i+'" style="background:#84e4fa  ;display: inline-block; border: 1px solid #e8e8e8 ;cursor: pointer; border-radius:5px; margin-right: 10px;padding: 4px;margin-bottom: 4px;" onclick="editInterface.addTextArea(this.id);">'
+				htmlStr += '<div id="div_'+i+'" style="background:#84e4fa  ;display: inline-block; border: 1px solid #e8e8e8 ;cursor: pointer; border-radius:5px; margin-right: 10px;padding: 4px;margin-bottom: 4px;" onclick="editInterface.addTextArea(this.id);"  onmouseover="editInterface.showTip(this.id);" oncontextmenu="hideTip();">'
 					+ paramDiv + '<span style="display: inline-block; width: 70px; margin-right: 3px; text-align: right;">'+ descr +' :</span><span style="display: inline-block; width: 100px">'+ name + '</span></div>';
 			}
 		}else{
@@ -39,7 +39,7 @@ function formatJsonToParam(paramStr, paramTextArea_Id, paramDivArea_Id){
 				if(parseInt(enabled)){
 					paramDiv = '<label style="margin-bottom: 0px; color: red">*&nbsp&nbsp</label>';
 				}
-				htmlStr += '<div id="div_'+i+'" style="background:#84e4fa  ;display: inline-block; border: 1px solid #e8e8e8 ;cursor: pointer; border-radius:5px; margin-right: 10px;padding: 4px;margin-bottom: 4px;" onclick="editInterface.addTextArea(this.id)">'
+				htmlStr += '<div id="div_'+i+'" style="background:#84e4fa  ;display: inline-block; border: 1px solid #e8e8e8 ;cursor: pointer; border-radius:5px; margin-right: 10px;padding: 4px;margin-bottom: 4px;" onclick="editInterface.addTextArea(this.id);" onmouseover="editInterface.showTip(this.id);" oncontextmenu ="hideTip();">'
 						+ paramDiv + '<span style="display: inline-block; width: 70px; margin-right: 3px; text-align: right;">'+ descr +' :</span><span style="display: inline-block; width: 100px">'+ name + '</span></div>';
 			}
 		}
@@ -53,6 +53,9 @@ function formatJsonToParam(paramStr, paramTextArea_Id, paramDivArea_Id){
 		document.getElementById(paramDivArea_Id).innerHTML = htmlStr;
 	}
 	return param;
+}
+function hideTip(){
+	document.getElementById("sel_div").style.display="none";
 }
 //city=21格式 转为正规 sql参数格式
 function formatParamToJson(param, realParamTextArea_Id){

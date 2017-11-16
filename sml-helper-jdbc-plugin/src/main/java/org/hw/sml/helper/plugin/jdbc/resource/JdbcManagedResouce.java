@@ -13,16 +13,21 @@ import java.sql.Types;
 import java.util.List;
 import java.util.Map;
 
+import org.hw.sml.FrameworkConstant;
 import org.hw.sml.core.SqlMarkupAbstractTemplate;
 import org.hw.sml.helper.plugin.jdbc.csv.CsvCreater;
 import org.hw.sml.helper.plugin.jdbc.csv.CsvParser;
+import org.hw.sml.jdbc.ConnectionCallback;
 import org.hw.sml.jdbc.JdbcTemplate;
+import org.hw.sml.jdbc.exception.SqlException;
 import org.hw.sml.report.model.Update;
 import org.hw.sml.rest.annotation.Param;
+import org.hw.sml.rest.annotation.PathParam;
 import org.hw.sml.rest.annotation.SmlResource;
 import org.hw.sml.server.NanoHTTPD;
 import org.hw.sml.server.NanoHTTPD.IHTTPSession;
 import org.hw.sml.support.LoggerHelper;
+import org.hw.sml.support.SmlAppContextUtils;
 import org.hw.sml.support.ioc.BeanHelper;
 import org.hw.sml.support.ioc.annotation.Bean;
 import org.hw.sml.support.ioc.annotation.Val;
@@ -37,6 +42,15 @@ public class JdbcManagedResouce {
 	public Object update(Map<String,String> params){
 		LoggerHelper.debug(getClass(),String.format("update[%s]",params));
 		return getAbstractTemplate(params.get("dbid")).update(params.get("sql"));
+	}
+	@SmlResource("/if/{ifId}/sql")
+	public String getSql(@PathParam("ifId")String ifId){
+		return SmlAppContextUtils.getSmlContextUtils().queryRst(ifId,null).getSqlString();
+	}
+	@SmlResource("if/{ifId}")
+	public List<Map<String,Object>> ifIdInfo(@PathParam("ifId")String ifId,@Param(value="fields",defaultValue="id")String fields){
+		String sql="select "+fields+" from ("+FrameworkConstant.getSupportKey("CFG_JDBC_SQL")+" or 1=1) where id like '%'||?||'%'";
+		return getAbstractTemplate("defJt").queryForList(sql,ifId,ifId);
 	}
 	@SmlResource("query")
 	public Object query(Map<String,String> params){
@@ -56,34 +70,41 @@ public class JdbcManagedResouce {
 		return result;
 	}
 	@SmlResource(value="export",produces=SmlResource.OCTET_STREAM)
-	public Object  export(@Param("User-Agent")String userAgent,@Param(value="dbid",defaultValue="defJt")String dbid,@Param(value="tableName",defaultValue="user_tables") final String tableName) throws SQLException, IOException{
+	public Object  export(final @Param("User-Agent")String userAgent,@Param(value="dbid",defaultValue="defJt")String dbid,@Param(value="tableName",defaultValue="user_tables") final String tableName) throws SQLException, IOException{
 			final JdbcTemplate jt=getAbstractTemplate(dbid);
-			Connection conn=jt.getDataSource().getConnection();
-			ResultSet rs=conn.createStatement().executeQuery("select * from "+tableName);
-			ResultSetMetaData rsmd=rs.getMetaData();
-			int length=rsmd.getColumnCount();
-			List<String> headLst=MapUtils.newArrayList();
-			for(int i=1;i<=length;i++){
-				String name=rsmd.getColumnName(i);
-				int type=rsmd.getColumnType(i);
-				if(type==Types.DATE||type==Types.TIME||type==Types.TIMESTAMP){
-					headLst.add(name+"@date");
-				}else{
-					headLst.add(name);
-				}
-			}
-			conn.close();
-			//---------------------------------
-			File file=File.createTempFile("table_","_temp");
-			CsvCreater.create(new FileOutputStream(file), headLst.toArray(new String[]{}),new CsvCreater.Retriver() {
-				public List<Map<String, Object>> retrive(int start, int limit) {
-					String sql="select * from (select t.*,rownum as row_ from "+tableName+" t) where row_ >"+start+" and row_<="+start+limit;
-					List<Map<String,Object>> datas=jt.queryForList(sql);
-					LoggerHelper.debug(getClass(),"table:["+tableName+"] between "+start+" and "+(start+limit));
-					return datas;
+			return jt.execute(new ConnectionCallback<Object>() {
+				public Object doInConnection(Connection conn) {
+					ResultSet rs;
+					try {
+						rs = conn.createStatement().executeQuery("select * from "+tableName);
+						ResultSetMetaData rsmd=rs.getMetaData();
+						int length=rsmd.getColumnCount();
+						List<String> headLst=MapUtils.newArrayList();
+						for(int i=1;i<=length;i++){
+							String name=rsmd.getColumnName(i);
+							int type=rsmd.getColumnType(i);
+							if(type==Types.DATE||type==Types.TIME||type==Types.TIMESTAMP){
+								headLst.add(name+"@date");
+							}else{
+								headLst.add(name);
+							}
+						}
+						//---------------------------------
+						File file=File.createTempFile("table_","_temp");
+						CsvCreater.create(new FileOutputStream(file), headLst.toArray(new String[]{}),new CsvCreater.Retriver() {
+							public List<Map<String, Object>> retrive(int start, int limit) {
+								String sql="select * from (select t.*,rownum as row_ from "+tableName+" t) where row_ >"+start+" and row_<="+start+limit;
+								List<Map<String,Object>> datas=jt.queryForList(sql);
+								LoggerHelper.debug(getClass(),"table:["+tableName+"] between "+start+" and "+(start+limit));
+								return datas;
+							}
+						});
+						return NanoHTTPD.newStreamResponse(new FileInputStream(file)).export(tableName+".csv", userAgent);
+					} catch (Exception e) {
+						throw new SqlException(e);
+					}
 				}
 			});
-			return NanoHTTPD.newStreamResponse(new FileInputStream(file)).export(tableName+".csv", userAgent);
 	}
 	@SuppressWarnings("deprecation")
 	@SmlResource(value="import",produces=SmlResource.TEXT_PLAIN)

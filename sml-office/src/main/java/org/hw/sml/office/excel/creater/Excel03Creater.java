@@ -11,6 +11,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.hw.sml.tools.ClassUtil;
 import org.hw.sml.tools.RegexUtils;
 
 public class Excel03Creater extends ExcelBaseCreater {
@@ -82,8 +83,9 @@ public class Excel03Creater extends ExcelBaseCreater {
 	    			for(int n=0;n<propertyNames.length;n++){
 	    				Cell fc=row.createCell(n);
 	    				String value=String.valueOf(record.get(propertyNames[n]));
-	    				if(RegexUtils.isNumber(value)){
-    	            		fc.setCellValue(Double.parseDouble((value)));
+	    				if(value.trim().length()>0&&RegexUtils.isNumber(value)){///hw  0329
+	    					Double d=(Double) ClassUtil.convertValueToRequiredType(value,Double.class);
+    	            		fc.setCellValue(d);
     	            	}else{
     	            		fc.setCellValue(value.equals("null")?"":value);
     	            	}

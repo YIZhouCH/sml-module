@@ -13,7 +13,12 @@ create table DM_CO_BA_CFG_RCPT_IF
 insert into dm_co_ba_cfg_rcpt_if (ID, MAINSQL, REBUILD_INFO, CONDITION_INFO, CACHE_ENABLED, CACHE_MINUTES, DB_ID, DESCRIBE, UPDATE_TIME)
 values ('if-cfg-interMngBuilderQuery', 'select * from dm_co_ba_cfg_rcpt_if_builder ', '0
 toLowerCaseForKey=false', 'defJt', 0, 5, 'defJt', '', to_date('07-03-2017 17:12:42', 'dd-mm-yyyy hh24:mi:ss'));
-
+insert into DM_CO_BA_CFG_RCPT_IF (ID, MAINSQL, REBUILD_INFO, CONDITION_INFO, CACHE_ENABLED, CACHE_MINUTES, DB_ID, DESCRIBE, UPDATE_TIME)
+values ('if-cfg-enum-dss', 'select ''defJt'' as id_,''默认'' as name_ from dual', 'GroupFieldDataBuilder
+groupname=id_
+oriFields=
+newFields=
+toLowerCaseForKey=true', '{}', 0, 0, 'defJt', '接口配置管理-数据源枚举', to_date('13-10-2017 10:25:03', 'dd-mm-yyyy hh24:mi:ss'));
 insert into dm_co_ba_cfg_rcpt_if (ID, MAINSQL, REBUILD_INFO, CONDITION_INFO, CACHE_ENABLED, CACHE_MINUTES, DB_ID, DESCRIBE, UPDATE_TIME)
 values ('if-cfg-interMngEgQuery', 'select * from DM_CO_BA_CFG_RCPT_IF_EG where id=#id#', '{"type":"0"}', '{
 "sqlParams":
@@ -116,8 +121,7 @@ select substr(id,1,instr(id,''-'',1)-1)  sign ,id,mainsql,rebuild_info,condition
  </if>
 <if test=" ''@queryType''==''count'' ">
       select count(1) as "total"   from (<included id="select"/>) 
-</if> ', '{"classpath":"com.eastcom_sw.inas.core.service.jdbc.build.lmaps.PageDataBuilder"
-}', '{
+</if> ', 'PageDataBuilder', '{
 "sqlParams":
 [
 {"name":"id","type":"char","enabled":"1","descr":"id"},
@@ -195,7 +199,41 @@ create table DM_CO_BA_CFG_RCPT_IF_MENU
   descr       VARCHAR2(256),
   creator     VARCHAR2(25),
   update_time VARCHAR2(25)
-)
+);
+insert into DM_CO_BA_CFG_RCPT_IF_menu (ID, NAME, TYPE, PARENT_ID, DESCR, CREATOR, UPDATE_TIME)
+values ('0', '接口管理', 0, '00', '总目录', '', '20161104144800');
+
+insert into DM_CO_BA_CFG_RCPT_IF_menu (ID, NAME, TYPE, PARENT_ID, DESCR, CREATOR, UPDATE_TIME)
+values ('20161105165300', '接口管理', 0, '0', '接口管理', '', '20161107165300');
+insert into DM_CO_BA_CFG_RCPT_IF_menu (ID, NAME, TYPE, PARENT_ID, DESCR, CREATOR, UPDATE_TIME)
+values ('if-cfg-enum-dss', '接口配置管理-数据源枚举', 1, '20161105165300', '接口', 'hw', '20171013102503');
+
+insert into DM_CO_BA_CFG_RCPT_IF_menu (ID, NAME, TYPE, PARENT_ID, DESCR, CREATOR, UPDATE_TIME)
+values ('if-cfg-interMngBuilderQuery', '接口配置管理-包装器枚举', 1, '20161105165300', '', 'zxw', '20161107165400');
+
+insert into DM_CO_BA_CFG_RCPT_IF_menu (ID, NAME, TYPE, PARENT_ID, DESCR, CREATOR, UPDATE_TIME)
+values ('if-cfg-interMngEgQuery', '接口配置管理-测试样例查询', 1, '20161105165300', '', 'zxw', '20161107165400');
+
+insert into DM_CO_BA_CFG_RCPT_IF_menu (ID, NAME, TYPE, PARENT_ID, DESCR, CREATOR, UPDATE_TIME)
+values ('if-cfg-interMngEgUpdate', '接口配置管理-测试样例表update操作', 1, '20161105165300', '', 'zxw', '20161107165400');
+
+insert into DM_CO_BA_CFG_RCPT_IF_menu (ID, NAME, TYPE, PARENT_ID, DESCR, CREATOR, UPDATE_TIME)
+values ('if-cfg-interMngFieldQuery', '接口配置管理-根据id查字段查询', 1, '20161105165300', '', 'zxw', '20161107165400');
+
+insert into DM_CO_BA_CFG_RCPT_IF_menu (ID, NAME, TYPE, PARENT_ID, DESCR, CREATOR, UPDATE_TIME)
+values ('if-cfg-interMngIfUpdate', '接口配置管理-接口表update操作', 1, '20161105165300', '', 'zxw', '20161107165400');
+
+insert into DM_CO_BA_CFG_RCPT_IF_menu (ID, NAME, TYPE, PARENT_ID, DESCR, CREATOR, UPDATE_TIME)
+values ('if-cfg-interMngLike', '接口配置管理-模糊查询', 1, '20161105165300', 'fq', 'zxw', '20170919111925');
+
+insert into DM_CO_BA_CFG_RCPT_IF_menu (ID, NAME, TYPE, PARENT_ID, DESCR, CREATOR, UPDATE_TIME)
+values ('if-cfg-interMngLogUpdate', '接口配置管理-日志表update操作', 1, '20161105165300', '', 'zxw', '20161107165400');
+
+insert into DM_CO_BA_CFG_RCPT_IF_menu (ID, NAME, TYPE, PARENT_ID, DESCR, CREATOR, UPDATE_TIME)
+values ('if-cfg-interMngMenu', '接口配置管理-菜单-展示', 1, '20161105165300', '', 'zxw', '20161107165400');
+
+insert into DM_CO_BA_CFG_RCPT_IF_menu (ID, NAME, TYPE, PARENT_ID, DESCR, CREATOR, UPDATE_TIME)
+values ('if-cfg-interMngTreeOrLike', '接口配置管理-树图展示', 1, '20161105165300', '', 'zxw', '20161107165400');
 
 -- Create table
 create table DM_CO_BA_CFG_RCPT_IF_BUILDER
@@ -250,4 +288,13 @@ insert into dm_co_ba_cfg_rcpt_if_builder (ID, NAME, CLASSPATH, JAR, DESCR, TYPE)
 values (9, '排序并取TopN', 'OrderDataBuilder', '', 'orderName=
 orderType=
 topN=', '');
-
+--接口测试样例表
+create table DM_CO_BA_CFG_RCPT_IF_EG
+(
+  id         VARCHAR2(128),
+  param_info VARCHAR2(512),
+  db_id      VARCHAR2(128),
+  descr      VARCHAR2(128),
+  url        VARCHAR2(256),
+  id_eg      VARCHAR2(128) not null primary key
+);

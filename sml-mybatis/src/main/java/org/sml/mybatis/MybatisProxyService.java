@@ -16,6 +16,7 @@ import org.hw.sml.support.ioc.annotation.Bean;
 import org.hw.sml.support.ioc.annotation.Init;
 import org.hw.sml.support.ioc.annotation.Stop;
 import org.hw.sml.support.ioc.annotation.Val;
+import org.hw.sml.tools.Assert;
 import org.hw.sml.tools.MapUtils;
 import org.sml.mybatis.plugins.PaginationInterceptor;
 import org.sml.mybatis.plugins.RstInterceptor;
@@ -35,9 +36,11 @@ public class MybatisProxyService{
 	public void init() {
 		if(dss==null){
 			LoggerHelper.error(getClass(),"jdbcMybatisDss bean is not configed!");
+			return;
 		}
 		if(mapperResource==null){
 			LoggerHelper.error(getClass(),"mapperResource bean is not configed!");
+			return;
 		}
 		LoggerHelper.info(getClass(),"mybatis mapppers -->"+mapperResource);
 		sessions=MapUtils.newHashMap();
@@ -52,6 +55,7 @@ public class MybatisProxyService{
 				for(String pn:aliasPn.split(",| "))
 					configuration.getTypeAliasRegistry().registerAliases(pn);
 			}
+			Assert.notNull(mapperResource.get(entry.getKey()),"mybatis mapperResource id :["+entry.getKey()+"] not exists!");
 			for(String pn:mapperResource.get(entry.getKey()).split(",| ")){
 				configuration.getTypeAliasRegistry().registerAliases(pn);
 				configuration.addMappers(pn);
@@ -72,14 +76,20 @@ public class MybatisProxyService{
 	public SqlSession getSqlSession(String dbid){
 		return sessions.get(dbid);
 	}
+	private Map<Class<?>,String> dbids=MapUtils.newHashMap();
 	public <T> T getMapper(Class<T> t){
-		String pac=t.getPackage().getName();
 		String dbid="defJt";
-		for(Map.Entry<String,String> entry:mapperResource.entrySet()){
-			for(String pn:entry.getValue().split(",| ")){
-				if(pn.equals(pac)){
-					dbid=entry.getKey();
-					break;
+		if(dbids.containsKey(t)){
+			dbid=dbids.get(t);
+		}else{
+			String pac=t.getPackage().getName();
+			for(Map.Entry<String,String> entry:mapperResource.entrySet()){
+				for(String pn:entry.getValue().split(",| ")){
+					if(pn.equals(pac)){
+						dbid=entry.getKey();
+						dbids.put(t,dbid);
+						break;
+					}
 				}
 			}
 		}

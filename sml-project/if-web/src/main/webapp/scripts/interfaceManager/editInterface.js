@@ -3,10 +3,12 @@ $(function(){
 });
 "use strict";
 var count = 0,
+ filedName='',
 	editInterface = {
 		init : function(){
 			editInterface.initRebuild();	//包装器
 			editInterface.initDb_Id();		//数据源
+			editInterface.initLiClickEvent();//初始化li点击事件
 			var nodeData = parent.interfaceManager.getNodeData();
 			if(!nodeData){
 				return;
@@ -131,7 +133,7 @@ var count = 0,
 		},
 		//从后台枚举, 加载数据源
 		initDb_Id : function(){
-			var url = "/sml/query/srpt-enum-dataSource",
+			var url = "/sml/query/if-cfg-enum-dss",
 				result = commonAjax(url);
 			if(result.success){
 				var data = result.data,
@@ -307,6 +309,36 @@ var count = 0,
 		//删除table中 按钮所在行的数据
 		delParam : function(obj){
 			$(obj).parents("tr").remove();
+		},
+		showTip:function(thisID){
+			 var  e =event || window.event;
+			 var offset=$("#"+thisID).offset();
+			$("#sel_div").show();
+			$("#sel_div").css("position", "absolute");
+			$("#sel_div").css("top",offset.top+24);
+			$("#sel_div").css("left",offset.left);
+			filedName=$("#"+thisID).find("span").eq(1).html();
+		},
+		initLiClickEvent:function(){
+			$("#bq_sel").find("li").on("mousemove",function(){
+				$("#bq_sel").find("li").removeClass("selected");
+				$(this).addClass("selected");
+			});
+			$("#bq_sel").on("mouseleave",function(){
+				$("#sel_div").hide();
+			});
+				$("#bq_sel").find("li").on("click",function(){
+				var value=$(this).attr("val");
+				var htmlStr='';
+				switch(value){
+				case 'if':htmlStr='<if test=" \'@'+filedName+'\'==\'\' ">'+filedName+'</if>';break;
+				case 'isNet':htmlStr='<isNotEmpty property="'+filedName+'"> and '+filedName+'=#'+filedName+'#</isNotEmpty>';break;
+				case 'isEt':htmlStr='<isEmpty property="'+filedName+'"> and '+filedName+'</isEmpty>';break;
+				default:htmlStr=filedName;break;
+				}
+				$("#mainsql").insertAtCaret(htmlStr);
+				$("#sel_div").hide();
+			});
 		},
 		//点击蓝色的参数块时, sql中加入该id
 		addTextArea : function(id){

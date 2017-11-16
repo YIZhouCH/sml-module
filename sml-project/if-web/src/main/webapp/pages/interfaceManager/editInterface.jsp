@@ -26,6 +26,16 @@
 	<script src="../../scripts/interfaceManager/common/util.js" type="text/javascript"></script>
 	<script src="../../scripts/interfaceManager/editInterface.js" type="text/javascript"></script>
 	<link href="../../static/interfaceManager/editInterface.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+.selected{
+background: #5cbdf4;
+}
+#sel_div li{
+padding: 2px 0 0 0;
+height: 24px;
+cursor: pointer;
+}
+</style>
 </head>
    
 <body style="overflow-x: hidden;">
@@ -145,7 +155,7 @@
 					</tr>
 				</table>
 			</div>
-			<div class="modal-body" style="height:360px; padding: 0 15px 15px 15px; overflow: auto;">
+			<div class="modal-body"  style="height:360px; padding: 0 15px 15px 15px; overflow: auto;">
 				<table id="addParam" class="table">
 					<!-- <thead>
 						<tr>
@@ -179,5 +189,11 @@
 		</div>
 	</div>
 </div>
+ <div style="width:180px;display: none;z-index: 999999" id="sel_div"><ul class="form-control" style="height:100%;" id="bq_sel" >
+			<li val="if">if表达示</li>
+			<li val="isNet">isNotEmpty</li>
+			<li val="isEt">isEmpty</li>
+		</ul></div>
+
 </body>
 </html>
