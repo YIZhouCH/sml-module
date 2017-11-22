@@ -296,6 +296,10 @@ public class SmlManageService extends RcptBaseService{
 			Method method=invokeBean.getClass().getMethod(invokeMethod,String.class,HttpServletRequest.class,HttpServletResponse.class);
 			Object obj=method.invoke(invokeBean,invokeMark,request,response);
 			if(obj!=null){
+				if(obj instanceof String&&obj.toString().startsWith(WebTools.REDIRECT)){
+					request.getRequestDispatcher(obj.toString().replaceFirst(WebTools.REDIRECT,"")).forward(request, response);
+					return;
+				}
 				WebTools.print(response,WebTools.buildResult(true,"success",obj));
 			}
 		}catch (NoSuchMethodException e) {

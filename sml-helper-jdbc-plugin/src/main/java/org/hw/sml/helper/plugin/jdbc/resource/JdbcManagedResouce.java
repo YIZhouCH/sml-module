@@ -21,6 +21,7 @@ import org.hw.sml.jdbc.ConnectionCallback;
 import org.hw.sml.jdbc.JdbcTemplate;
 import org.hw.sml.jdbc.exception.SqlException;
 import org.hw.sml.report.model.Update;
+import org.hw.sml.rest.annotation.Body;
 import org.hw.sml.rest.annotation.Param;
 import org.hw.sml.rest.annotation.PathParam;
 import org.hw.sml.rest.annotation.SmlResource;
@@ -46,6 +47,14 @@ public class JdbcManagedResouce {
 	@SmlResource("/if/{ifId}/sql")
 	public String getSql(@PathParam("ifId")String ifId){
 		return SmlAppContextUtils.getSmlContextUtils().queryRst(ifId,null).getSqlString();
+	}
+	@SmlResource("/query/{ifId}")
+	public Object queryIfId(@PathParam("ifId")String ifId,@Body Map<String,String> params){
+		return SmlAppContextUtils.getSmlContextUtils().query(ifId, params);
+	}
+	@SmlResource("/update/{ifId}")
+	public Object updateIfId(@PathParam("ifId")String ifId,@Body Map<String,String> params){
+		return SmlAppContextUtils.getSmlContextUtils().update(ifId, params);
 	}
 	@SmlResource("if/{ifId}")
 	public List<Map<String,Object>> ifIdInfo(@PathParam("ifId")String ifId,@Param(value="fields",defaultValue="id")String fields){
