@@ -98,8 +98,13 @@ public class WebRouter extends Router{
 		}
 		try {
 			Object result=method.invoke(urlSource.getBean(),params);
-			if(result!=null)
-			WebTools.print(getCurrentResponse(),result);
+			if(result!=null){
+				if(result instanceof String&&result.toString().startsWith(WebTools.REDIRECT)){
+					getCurrentRequest().getRequestDispatcher(result.toString().replaceFirst(WebTools.REDIRECT,"")).forward(getCurrentRequest(), getCurrentResponse());
+					return;
+				}
+				WebTools.print(getCurrentResponse(),result);
+			}
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 			getCurrentResponse().setStatus(HttpServletResponse.SC_BAD_REQUEST);

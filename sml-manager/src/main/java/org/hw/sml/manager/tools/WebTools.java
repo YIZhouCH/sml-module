@@ -24,6 +24,7 @@ import org.hw.sml.tools.MapUtils;
 import com.alibaba.fastjson.JSON;
 
 public class WebTools {
+	public static final String REDIRECT="redirect:";
 	
 	/**
 	 * 输出到界面
@@ -103,7 +104,7 @@ public class WebTools {
 	@SuppressWarnings("unchecked")
 	public static Map<String,String> toMap(HttpServletRequest request){
 		Map<String,String> result=MapUtils.newHashMap();
-		Map<String,Object> strs=request.getParameterMap();
+		Map<String,?> strs=request.getParameterMap();
 		for (String key : strs.keySet()) {
 			result.put(key,request.getParameter(key));
 		}

@@ -25,7 +25,6 @@ public class SmlServlet extends HttpServlet{
 		igNoreOperator.add("invoke");
 		igNoreOperator.add("export");
 		igNoreOperator.add("update");
-		
 	}
 	/**
 	 * 
@@ -38,6 +37,60 @@ public class SmlServlet extends HttpServlet{
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 		WebRouter.start();
+		/*//filter-servlet-listener等以bean形式进行管理
+		try{
+			ServletContext ct=config.getServletContext();
+			PropertiesHelper ph=BeanHelper.getBean(PropertiesHelper.class);
+			//contextParam
+			Map<String,String> contextParams=ph.getValuesByKeyStart("contextParam-");
+			for(Map.Entry<String,String> entry:contextParams.entrySet()){
+				ct.setInitParameter(entry.getKey(),entry.getValue());
+			}
+			Map<String,String> listeners=ph.getValuesByKeyStart("listener-");
+			for(Map.Entry<String,String> entry:listeners.entrySet()){
+				Map<String,String> kvs=MapUtils.transMapFromStr(entry.getValue());
+				Assert.notNull(kvs.get("class"),"listener props [class] can't null!");
+				ct.addListener(kvs.get("class"));
+			}
+			Map<String,String> servlets=ph.getValuesByKeyStart("servlet-");
+			for(Map.Entry<String,String> entry:servlets.entrySet()){
+				String servletName=entry.getKey().replaceFirst("servlet-", "");
+				Map<String,String> kvs=MapUtils.transMapFromStr(entry.getValue());
+				Assert.notNull(kvs.get("class"),"servlet props [class] can't null!");
+				Dynamic dynamic=ct.addServlet(servletName, kvs.get("class"));
+				Assert.notNull(kvs.get("mapping"),"servlet props [mapping] can't null!");
+				dynamic.addMapping(kvs.get("mapping").split(","));
+				if(kvs.containsKey("initParameters"))
+					try {
+						dynamic.setInitParameters((Map<String,String>)BeanHelper.evelV(kvs.get("initParameters")));
+					} catch (ElException e) {
+						e.printStackTrace();
+					}
+				if(kvs.containsKey("loadOnStartup")){
+					dynamic.setLoadOnStartup(MapUtils.getInt(kvs,"loadOnStartup"));
+				}
+			}
+			Map<String,String> filters=ph.getValuesByKeyStart("filter-");
+			for(Map.Entry<String,String> entry:filters.entrySet()){
+				String filterName=entry.getKey().replaceFirst("filter-", "");
+				Map<String,String> kvs=MapUtils.transMapFromStr(entry.getValue());
+				Assert.notNull(kvs.get("class"),"servlet props [class] can't null!");
+				FilterRegistration.Dynamic dynamic=ct.addFilter(filterName, kvs.get("class"));
+				Assert.notNull(kvs.get("mapping"),"servlet props [mapping] can't null!");
+				
+				dynamic.addMappingForUrlPatterns(null, true, kvs.get("mapping").split(","));
+				if(kvs.containsKey("initParameters"))
+					try {
+						dynamic.setInitParameters((Map<String,String>)BeanHelper.evelV(kvs.get("initParameters")));
+					} catch (ElException e) {
+						e.printStackTrace();
+					}
+			}
+		}catch(Exception e){
+			LoggerHelper.error(getClass(),e.toString());
+			e.printStackTrace();
+		}*/
+		//
 	}
 
 
@@ -50,7 +103,7 @@ public class SmlServlet extends HttpServlet{
 		 String method=request.getMethod();
 		 String uri=request.getRequestURI();
 		 uri.replaceAll("/{2,}","/");
-		 LoggerHelper.debug(getClass(),String.format("sml request method[{}]-uri[{}]",method,uri));
+		 LoggerHelper.debug(getClass(),String.format("sml request method[%s]-uri[%s]",method,uri));
 		 String[] uris=WebTools.getUris(uri);
 		 //2开始
 		 if(uris.length<3){
