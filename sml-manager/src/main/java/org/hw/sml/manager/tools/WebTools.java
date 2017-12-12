@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,13 +20,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.hw.sml.component.RcptFastJsonMapper;
+import org.hw.sml.core.build.SmlTools;
+import org.hw.sml.manager.context.WebRouter;
 import org.hw.sml.tools.MapUtils;
-
-import com.alibaba.fastjson.JSON;
 
 public class WebTools {
 	public static final String REDIRECT="redirect:";
-	
+	public static final RcptFastJsonMapper jsonMapper=new RcptFastJsonMapper();
 	/**
 	 * 输出到界面
 	 * @param response
@@ -49,15 +51,24 @@ public class WebTools {
 	 * @param result
 	 * @return
 	 */
-	public static Map<String,Object> buildResult(boolean successMark,String msg,Object result){
+	public static Object buildResult(boolean successMark,String msg,Object result){
+		if(Boolean.valueOf(getReback("NOWRAPPER","false"))){
+			return result;
+		}
 		Map<String,Object> returnResult=new LinkedHashMap<String, Object>();
 		returnResult.put("success",successMark);
 		returnResult.put("msg",msg);
-		returnResult.put("data",result);
+		returnResult.put(getReback("UI","data"),result);
+		if(result!=null&&result instanceof Collection){
+			returnResult.put("total",((Collection)result).size());
+		}
 		return returnResult;
 	}
+	private static String getReback(String name,String defaultV){
+		return WebRouter.getCurrentRequest()==null||WebRouter.getCurrentRequest().getParameter(name)==null?defaultV:WebRouter.getCurrentRequest().getParameter(name);
+	}
 	public static String toJson(Object obj){
-		return JSON.toJSONString(obj);
+		return jsonMapper.toJson(obj);
 	}
 	public static String toGson(Object obj){
 		return toJson(obj);
@@ -66,7 +77,7 @@ public class WebTools {
 		return fromJson(json, t);
 	}
 	public static <T> T fromJson(String json,Class<T> t){
-		return JSON.parseObject(json,t);
+		return jsonMapper.toObj(json,t);
 	}
 	/**
 	 * jqgrid插件查询
@@ -103,12 +114,17 @@ public class WebTools {
 	 */
 	@SuppressWarnings("unchecked")
 	public static Map<String,String> toMap(HttpServletRequest request){
-		Map<String,String> result=MapUtils.newHashMap();
-		Map<String,?> strs=request.getParameterMap();
-		for (String key : strs.keySet()) {
-			result.put(key,request.getParameter(key));
-		}
-		return result;
+		Map<String,Object> strs=request.getParameterMap();
+		return SmlTools.rebuildSimpleKv(strs);
+	}
+	public static Map<String,String> getRequestBodyMap(HttpServletRequest request) throws IOException{
+		@SuppressWarnings("unchecked")
+		Map<String,Object> result=getRequestEntity(request,Map.class);
+		return SmlTools.rebuildSimpleKv(result);
+		
+	}
+	public static <T> T getRequestEntity(HttpServletRequest request,Class<T> clazz) throws IOException{
+		return WebTools.fromGson(getRequestBody(request),clazz);
 	}
 	/**
 	 * @throws IOException 
@@ -198,7 +214,7 @@ public class WebTools {
           }
      }
     public static boolean isFormMethod(HttpServletRequest request){
-    	return request.getHeader("Content-Type").contains("multipart/form-data");
+    	return request.getHeader("Content-Type").contains("x-www-form-urlencoded");
     }
     public static Map<String,String> upload(String uploadPath,HttpServletRequest request) throws Exception{
 		Map<String,String> result=MapUtils.newHashMap();
@@ -245,7 +261,6 @@ public class WebTools {
 		}
 		return arr;
 	}
-    
     public static List<Map<String, Object>> toObjs(Map<String, Object> param) {
 		List<String> propertys=(List<String>) param.get("propertys");
 		List<List<Object>> datas=(List<List<Object>>) param.get("datas");

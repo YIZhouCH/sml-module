@@ -25,6 +25,7 @@ public class SmlServlet extends HttpServlet{
 		igNoreOperator.add("invoke");
 		igNoreOperator.add("export");
 		igNoreOperator.add("update");
+		igNoreOperator.add("cmd");
 	}
 	/**
 	 * 
@@ -103,7 +104,7 @@ public class SmlServlet extends HttpServlet{
 		 String method=request.getMethod();
 		 String uri=request.getRequestURI();
 		 uri.replaceAll("/{2,}","/");
-		 LoggerHelper.debug(getClass(),String.format("sml request method[%s]-uri[%s]",method,uri));
+		 LoggerHelper.getLogger().debug(getClass(),String.format("sml request method[%s]-uri[%s]",method,uri));
 		 String[] uris=WebTools.getUris(uri);
 		 //2开始
 		 if(uris.length<3){
@@ -135,6 +136,7 @@ public class SmlServlet extends HttpServlet{
 			 return;
 		 }
 		try {
+			 WebRouter.set(request, response);
 			SmlManageService.class.getMethod(operater,String.class,HttpServletRequest.class,HttpServletResponse.class)
 				.invoke(smlManageService,mark,request,response);
 		}catch (NoSuchMethodException e) {

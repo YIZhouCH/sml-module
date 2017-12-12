@@ -7,7 +7,7 @@ import java.util.List;
 public class PageObject implements Serializable {
 	private static final long serialVersionUID = -3213277316190699360L;
 
-	private List elements;
+	private List<?> elements;
 
 	private long totals = 0L; //总条数
 
@@ -21,7 +21,7 @@ public class PageObject implements Serializable {
 
 	}
 
-	public PageObject(List elements1, long totalElements, int pageNo,
+	public PageObject(List<?> elements1, long totalElements, int pageNo,
 			int pageSize) {
 		this.elements = elements1;
 
@@ -67,11 +67,11 @@ public class PageObject implements Serializable {
 		initPageNum();
 	}
 
-	public List getElements() {
+	public List<?> getElements() {
 		return elements;
 	}
 
-	public void setElements(List elements) {
+	public void setElements(List<?> elements) {
 		this.elements = elements;
 	}
 

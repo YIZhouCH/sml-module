@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hw.sml.core.build.SmlTools;
 import org.hw.sml.manager.model.PageObject;
 import org.hw.sml.manager.tools.HtmlHelp;
 import org.hw.sml.manager.tools.WebTools;
@@ -20,6 +21,7 @@ import org.hw.sml.office.excel.creater.Excel03Creater;
 import org.hw.sml.office.excel.creater.Excel07Creater;
 import org.hw.sml.office.excel.creater.ExcelBaseCreater;
 import org.hw.sml.office.excel.creater.ExcelCsvCreater;
+import org.hw.sml.report.model.Constants;
 import org.hw.sml.report.model.Update;
 import org.hw.sml.rest.annotation.SmlResource;
 import org.hw.sml.support.ClassHelper;
@@ -33,7 +35,7 @@ import org.hw.sml.tools.MapUtils;
  *
  */
 //@SmlResource
-public class SmlManageService extends RcptBaseService{
+public class SmlManageService extends RcptBaseService implements ISmlManageService{
 	private static final String COMMON="common";
 	/**
 	 * 接口概览
@@ -42,7 +44,7 @@ public class SmlManageService extends RcptBaseService{
 	 * @param response
 	 * @throws IOException
 	 */
-	public void index(String uri,HttpServletRequest request,HttpServletResponse response) throws IOException{
+	public void index(String uri,HttpServletRequest request,HttpServletResponse response) throws Exception{
 		if(uri.equals("default")||uri.equals(COMMON))
 			uri="com.eastcom_sw";
 		List<Class<?>>  smlLstClass=ClassHelper.getClassListByAnnotation(uri, SmlResource.class);
@@ -85,28 +87,50 @@ public class SmlManageService extends RcptBaseService{
 			if(requestBody==null||requestBody.length()<3){
 				throw new Exception("reqeuest body is empty!");
 			}
-			Update update=null;
-			if(updateStatus.equals("insert")){
-				update=WebTools.fromGson(requestBody,Update.class);
-				result=super.add(update);
-			}else if(updateStatus.equals("update")){
-				update=WebTools.fromGson(requestBody,Update.class);
-				result=super.update(update);
-			}else if(updateStatus.equals("delete")){
-				update=WebTools.fromGson(requestBody,Update.class);
-				result=super.delete(update);
-			}else if(updateStatus.equals("adu")){
-				update=WebTools.fromGson(requestBody,Update.class);
-				result=super.adu(update);
-			}else{ 
-				Map<String,String> param = WebTools.fromGson(requestBody,Map.class);
-				param.put("ifId", updateStatus);
-				result = super.update(param);
+			if(requestBody.startsWith("[")&&requestBody.endsWith("]")&&updateStatus.equals(COMMON)){
+				List<Update> updateDatas=MapUtils.newArrayList();
+				@SuppressWarnings("unchecked")
+				List<Map<String,Object>> updates=WebTools.fromGson(requestBody,List.class);
+				for(Map<String,Object> update:updates){
+					updateDatas.add(WebTools.fromGson(WebTools.toGson(update),Update.class));
+				}
+				result=super.update(updateDatas);
+			}else{
+				Update update=null;
+				if(updateStatus.equals(Constants.TYPE_INSERT)){
+					update=WebTools.fromGson(requestBody,Update.class);
+					result=super.add(update);
+				}else if(updateStatus.equals(Constants.TYPE_UPDATE)){
+					update=WebTools.fromGson(requestBody,Update.class);
+					result=super.update(update);
+				}else if(updateStatus.equals(Constants.TYPE_DELETE)){
+					update=WebTools.fromGson(requestBody,Update.class);
+					result=super.delete(update);
+				}else if(updateStatus.equals(Constants.TYPE_ADU)){
+					update=WebTools.fromGson(requestBody,Update.class);
+					result=super.adu(update);
+				}else if(updateStatus.equals(COMMON)){
+					update=WebTools.fromGson(requestBody,Update.class);
+					if(update.getType().equals(Constants.TYPE_INSERT)){
+						result=super.add(update);
+					}else if(update.getType().equals(Constants.TYPE_UPDATE)){
+						result=super.update(update);
+					}else if(update.getType().equals(Constants.TYPE_ADU)){
+						result=super.adu(update);
+					}else if(update.getType().equals(Constants.TYPE_DELETE)){
+						result=super.delete(update);
+					}
+				}else{ 
+					Map<String,Object> paramt = WebTools.fromGson(requestBody,Map.class);
+					Map<String,String> param=SmlTools.rebuildSimpleKv(paramt);
+					param.put("ifId", updateStatus);
+					result = super.update(param);
+				}
 			}
 			WebTools.print(response,WebTools.buildResult(true,"success", result));
 		}catch(Exception e){
 			e.printStackTrace();
-			WebTools.print(response,WebTools.buildResult(false,"success", e.getMessage()));
+			WebTools.print(response,WebTools.buildResult(false,e.getMessage(), e.getMessage()));
 		}
 	}
 	/**
@@ -146,7 +170,7 @@ public class SmlManageService extends RcptBaseService{
 			WebTools.print(response,WebTools.buildResult(true,"success", result));
 		}catch(Exception e){
 			e.printStackTrace();
-			WebTools.print(response,WebTools.buildResult(false,e.getMessage(),result));
+			WebTools.print(response,WebTools.buildResult(false,e.getMessage(),e.getMessage()));
 		}
 	}
 	/**
@@ -162,7 +186,7 @@ public class SmlManageService extends RcptBaseService{
 		String sheetName = null;
 		if(queryStatus.equals("export")){//jqGrid
 			final Map<String,String> param = WebTools.buildJqParams(request);
-			LoggerHelper.info(getClass(),"export params:"+param);
+			LoggerHelper.getLogger().info(getClass(),"export params:"+param);
 			System.out.println("export params:"+param);
 			title = param.get("FileTitle");
 			String headerTitle=param.get("HeaderTitle");
@@ -208,7 +232,7 @@ public class SmlManageService extends RcptBaseService{
 		}else if(queryStatus.equals("exportOriginal")){
 			
 			Map<String, Object> param = WebTools.fromGson(request.getParameter("params"),Map.class);
-			System.out.println("export params:"+param);
+			LoggerHelper.getLogger().debug(getClass(),"export params:"+param);
 			title = param.get("title")==null?null:String.valueOf(param.get("title"));
 			sheetName = String.valueOf(param.get("sheetName"));
 			System.out.println("sheetName:"+sheetName+"---title:"+title);
@@ -331,6 +355,20 @@ public class SmlManageService extends RcptBaseService{
 			}
 			pns=pnLst.toArray(new String[pnLst.size()]);
 			hns=hnLst.toArray(new String[hnLst.size()]);
+		}
+	}
+
+	public void cmd(String mark, HttpServletRequest request, HttpServletResponse response) {
+		try {
+			boolean wrapper=Boolean.valueOf(mark);
+			String elp=WebTools.getRequestBody(request);
+			if(wrapper){
+				elp="#{"+elp+"}";
+			}
+			WebTools.print(response,WebTools.buildResult(true,"success",BeanHelper.evelV(elp)));
+		} catch (Exception e) {
+			e.printStackTrace();
+			WebTools.print(response,WebTools.buildResult(false,e.getMessage(),e.getMessage()));
 		}
 	}
 	

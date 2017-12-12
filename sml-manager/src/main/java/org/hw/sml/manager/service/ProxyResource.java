@@ -27,7 +27,7 @@ public class ProxyResource {
 			url=defaultUrl;
 		}
 		url=url+("/"+(request.getPathInfo().replaceFirst("/proxy/","")).replace("//","/"))+"?"+request.getQueryString();
-		LoggerHelper.info(getClass(),"proxy url["+url+"]");
+		LoggerHelper.getLogger().info(getClass(),"proxy url["+url+"]");
 		String method=request.getMethod();
 		Enumeration<String> enums= request.getHeaderNames();
 		Map<String,String> heads=MapUtils.newHashMap();
