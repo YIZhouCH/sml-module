@@ -11,14 +11,13 @@
 	<artifactId>sml-module-manager</artifactId>
 	<description>sml-module-manager</description>
 	<modules>
-		<module>sml-server</module>
 		<module>sml-office</module>
+		<module>sml-server</module>
 		<module>sml-status</module>
 		<module>sml-helper-jdbc-plugin</module>
 		<module>sml-manager</module>
 		<module>sml-mybatis</module>
 		<module>sml-server-jetty</module>
-		<module>sml-server-master</module>
 		<module>sml-http</module>
 	</modules>
 </project>

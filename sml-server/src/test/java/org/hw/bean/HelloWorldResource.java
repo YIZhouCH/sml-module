@@ -41,7 +41,7 @@ public class HelloWorldResource{
 	}
 	@SmlResource("/query")
 	public Object query3() throws Exception{
-		return sqlMarkupAbstractTemplate.getSmlContextUtils().query("area-pm", "");
+		return sqlMarkupAbstractTemplate.getCacheManager().get("");
 	}
 	@SmlResource(value="/export",produces=SmlResource.OCTET_STREAM)
 	public Response export(@Param("User-Agent")String userAgent,IHTTPSession session) throws FileNotFoundException, UnsupportedEncodingException{

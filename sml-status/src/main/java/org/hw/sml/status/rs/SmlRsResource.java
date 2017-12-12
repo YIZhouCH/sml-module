@@ -27,6 +27,7 @@ public class SmlRsResource {
 			return e.toString();
 		}
 	}
+	
 	@SmlResource("shell/{issyn}")
 	public Object eval(@PathParam("issyn")String issyn,@Param(value="charset",defaultValue="utf8")final String charset,final String shellScript) throws IOException{
 		Process process=null;
@@ -48,11 +49,11 @@ public class SmlRsResource {
 	                    BufferedReader inBr = new BufferedReader(new InputStreamReader(in,charset));
 	                    String lineStr;
 	                    while ((lineStr = inBr.readLine()) != null) {
-	                        LoggerHelper.info(getClass(),lineStr);// 打印输出信息
+	                        LoggerHelper.getLogger().info(getClass(),lineStr);// 打印输出信息
 	                    }
 	                    if (p.waitFor() != 0) {
 	                        if (p.exitValue() == 1) {// 0表示正常结束，1：非正常结束
-	                        	LoggerHelper.error(getClass(),shellScript + "命令执行失败!");
+	                        	LoggerHelper.getLogger().error(getClass(),shellScript + "命令执行失败!");
 	                        }
 	                    }
 	                    inBr.close();

@@ -41,7 +41,7 @@ public class SmlServer{
 		};
 		NanoHTTPD.keepAliveNano=keepAlive;
 		httpd.start(timeout, daemon);
-		LoggerHelper.info(getClass(),"nanohttp server bind-->["+port+"],daemon:["+daemon+"],timeout:["+timeout+"]");
+		LoggerHelper.getLogger().info(getClass(),"nanohttp server bind-->["+port+"],daemon:["+daemon+"],timeout:["+timeout+"]");
 	}
 	public boolean isDaemon() {
 		return daemon;

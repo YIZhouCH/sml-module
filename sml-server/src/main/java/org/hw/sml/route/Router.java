@@ -35,6 +35,7 @@ import org.hw.sml.tools.RegexUtils;
 public class Router {
 	protected static Class<Router> LOG=Router.class;
 	protected static  Map<String,String> urlrewrite=MapUtils.newHashMap();
+	protected static RcptFastJsonMapper jsonMapper=new RcptFastJsonMapper();
 	public static final String KEY_URLREWRITE="urlrewrite.";
 	public static final String KEY_URLMAPPER="urlMapper.";
 	public static class Source{
@@ -80,11 +81,11 @@ public class Router {
 				String methodValuePath=smlMethodResource.value();
 				String[] paths=getPaths(classValuePath, methodValuePath);
 				urlMapper.put(paths[0],new Source(paths, method,smlMethodResource.method(),bean));
-				LoggerHelper.debug(LOG,String.format("urlMapper:%s,methodName:%s,parameter:%s",paths[0],method.getName(),Arrays.asList(method.getParameterTypes())));
+				LoggerHelper.getLogger().debug(LOG,String.format("urlMapper:%s,methodName:%s,parameter:%s",paths[0],method.getName(),Arrays.asList(method.getParameterTypes())));
 			}
 		}
 		for(Map.Entry<String,String> entry:BeanHelper.getBean(PropertiesHelper.class).getValuesByKeyStart(KEY_URLREWRITE).entrySet()){
-			LoggerHelper.debug(LOG,"urlrewrite "+entry.getKey().replaceFirst(KEY_URLREWRITE,"")+"---->"+entry.getValue());
+			LoggerHelper.getLogger().debug(LOG,"urlrewrite "+entry.getKey().replaceFirst(KEY_URLREWRITE,"")+"---->"+entry.getValue());
 			urlrewrite.put(entry.getValue(),entry.getKey());
 		}
 		for(Map.Entry<String,String> entry:BeanHelper.getBean(PropertiesHelper.class).getValuesByKeyStart(KEY_URLMAPPER).entrySet()){
@@ -97,9 +98,9 @@ public class Router {
 				method=method==null?ClassUtil.getMethod(bean.getClass(),velp[1],null):method;
 				Assert.notNull(method,entry.getKey()+" method["+velp[1]+"]not exists!");
 				urlMapper.put(key,new Source(getPaths("/",key),method,"",bean));
-				LoggerHelper.debug(LOG,String.format("urlMapper:%s,methodName:%s,parameter:%s",key,method.getName(),Arrays.asList(method.getParameterTypes())));
+				LoggerHelper.getLogger().debug(LOG,String.format("urlMapper:%s,methodName:%s,parameter:%s",key,method.getName(),Arrays.asList(method.getParameterTypes())));
 			}catch(Exception e){
-				LoggerHelper.error(LOG,entry.getKey()+" config error["+entry.getValue()+"] like ["+e+"]");
+				LoggerHelper.getLogger().error(LOG,entry.getKey()+" config error["+entry.getValue()+"] like ["+e+"]");
 			}
 		}
 	}
@@ -135,7 +136,7 @@ public class Router {
 		return source;
 	}
 	public static Response route(IHTTPSession session) throws Exception,ResponseException{
-		LoggerHelper.debug(LOG,session.getRemoteIpAddress()+"|"+session.getMethod().name()+",URI:["+session.getUri()+"] --");
+		LoggerHelper.getLogger().debug(LOG,session.getRemoteIpAddress()+"|"+session.getMethod().name()+",URI:["+session.getUri()+"] --");
 		Map<String, String> files = new HashMap<String, String>();
         org.hw.sml.server.NanoHTTPD.Method md = session.getMethod();
         if (md.name().equalsIgnoreCase("POST")) {
@@ -207,14 +208,14 @@ public class Router {
 						if(method.equals(SmlResource.GET)){
 							throw new ResponseException(Status.METHOD_NOT_ALLOWED, "METHOD_NOT_ALLOWED");
 						}
-						params[i]=new RcptFastJsonMapper().toObj(files.get("postData"), clazz);
+						params[i]=jsonMapper.toObj(files.get("postData"), clazz);
 					}
 				}
 				if(ats.length==0){
 						if(CharSequence.class.isAssignableFrom(clazz)){
 								params[i]=files.get("postData");
 						}else{
-							params[i]=new RcptFastJsonMapper().toObj(files.get("postData"), clazz);
+							params[i]=jsonMapper.toObj(files.get("postData"), clazz);
 						}
 				}
 			}
@@ -226,7 +227,7 @@ public class Router {
 			}else{
 				String produces=getProduces(urlSource.getMethod());
 				if(result!=null&&(!(result instanceof CharSequence))){
-					result=new RcptFastJsonMapper().toJson(result);
+					result=jsonMapper.toJson(result);
 				}
 				return NanoHTTPD.newResponse(Status.OK,produces,result==null?null:(String)result);
 			}

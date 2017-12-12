@@ -123,7 +123,7 @@ public abstract class NanoHTTPD {
                 // SocketTimeoutException, print the
                 // stacktrace
                 if (!(e instanceof SocketException && "NanoHttpd Shutdown".equals(e.getMessage())) && !(e instanceof SocketTimeoutException)) {
-                    LoggerHelper.error(getClass(), "Communication with the client broken, or an bug in the handler code exception:"+e);
+                    LoggerHelper.getLogger().error(getClass(), "Communication with the client broken, or an bug in the handler code exception:"+e);
                 }
             } finally {
                 safeClose(outputStream);
@@ -1172,7 +1172,7 @@ public abstract class NanoHTTPD {
 
 		@Override
 		public String getBody() {
-			return getFiles().get("postData");
+			return getFiles()==null?null:getFiles().get("postData");
 		}
     }
 
@@ -1826,7 +1826,7 @@ public abstract class NanoHTTPD {
             loadMimeTypes(MIME_TYPES, "META-INF/nanohttpd/default-mimetypes.properties");
             loadMimeTypes(MIME_TYPES, "META-INF/nanohttpd/mimetypes.properties");
             if (MIME_TYPES.isEmpty()) {
-                LoggerHelper.warn(NanoHTTPD.class, "no mime types found in the classpath! please provide mimetypes.properties");
+                LoggerHelper.getLogger().warn(NanoHTTPD.class, "no mime types found in the classpath! please provide mimetypes.properties");
             }
         }
         return MIME_TYPES;
@@ -1847,7 +1847,7 @@ public abstract class NanoHTTPD {
                     stream = url.openStream();
                     properties.load(stream);
                 } catch (IOException e) {
-                    LoggerHelper.debug(NanoHTTPD.class, "could not load mimetypes from " + url+" error["+e.getMessage()+"]");
+                    LoggerHelper.getLogger().debug(NanoHTTPD.class, "could not load mimetypes from " + url+" error["+e.getMessage()+"]");
                 } finally {
                     safeClose(stream);
                 }

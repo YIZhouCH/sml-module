@@ -56,7 +56,6 @@
 			<version>1.2.2</version>
 		</dependency>
 	</dependencies>
-	<packaging>war</packaging>
 	<build>
 		<plugins>
 			<!-- tomcat7:run -->

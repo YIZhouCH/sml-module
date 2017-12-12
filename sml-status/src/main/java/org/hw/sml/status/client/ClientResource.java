@@ -21,7 +21,7 @@ public class ClientResource {
 	@Init
 	public void init(){
 		severUrl=BeanHelper.getValue("server.master.url");
-		if(severUrl!=null)LoggerHelper.debug(getClass(),String.format("server.master.url[%s]",severUrl));
+		if(severUrl!=null)LoggerHelper.getLogger().debug(getClass(),String.format("server.master.url[%s]",severUrl));
 	}
 	@Scheduler(Scheduler.min1)
 	public void task(){
@@ -30,9 +30,9 @@ public class ClientResource {
 				return;
 			}
 			String result=Https.newPostHttps(severUrl+"/regist").body(JSON.toJSONString(statusResource.status())).execute();
-			LoggerHelper.debug(getClass(),"status sended! recieved->"+result);
+			LoggerHelper.getLogger().debug(getClass(),"status sended! recieved->"+result);
 		} catch (Exception e) {
-			LoggerHelper.error(getClass(),"status send error["+e.toString()+"]");
+			LoggerHelper.getLogger().error(getClass(),"status send error["+e.toString()+"]");
 		}
 	}
 

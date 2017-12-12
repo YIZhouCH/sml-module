@@ -12,7 +12,9 @@ public class ShiroUser implements Serializable{
 	private String username;
 	private String password;
 	private Set<String> roles;
+	private String userType;
 	private Set<String> resources;
+	private String salt;
 	private boolean isLocked;
 	
 	public String getUsername() {
@@ -48,8 +50,19 @@ public class ShiroUser implements Serializable{
 	}
 	@Override
 	public String toString() {
-		return "ShiroUser [username=" + username + ", password=" + password
-				+ ", roles=" + roles + ", resources=" + resources + "]";
+		return username;
+	}
+	public String getSalt() {
+		return salt;
+	}
+	public void setSalt(String salt) {
+		this.salt = salt;
+	}
+	public String getUserType() {
+		return userType;
+	}
+	public void setUserType(String userType) {
+		this.userType = userType;
 	}
 	
 }

@@ -41,7 +41,7 @@ public class JdbcManagedResouce {
 	private String nullChar="<null>";
 	@SmlResource("update")
 	public Object update(Map<String,String> params){
-		LoggerHelper.debug(getClass(),String.format("update[%s]",params));
+		LoggerHelper.getLogger().debug(getClass(),String.format("update[%s]",params));
 		return getAbstractTemplate(params.get("dbid")).update(params.get("sql"));
 	}
 	@SmlResource("/if/{ifId}/sql")
@@ -63,7 +63,7 @@ public class JdbcManagedResouce {
 	}
 	@SmlResource("query")
 	public Object query(Map<String,String> params){
-		LoggerHelper.debug(getClass(),String.format("query[%s]",params));
+		LoggerHelper.getLogger().debug(getClass(),String.format("query[%s]",params));
 		String sql=params.get("sql");
 		if(!sql.toLowerCase().contains("rownum")){
 			sql="select * from ("+sql+") where rownum<="+params.get("maxSize");
@@ -104,7 +104,7 @@ public class JdbcManagedResouce {
 							public List<Map<String, Object>> retrive(int start, int limit) {
 								String sql="select * from (select t.*,rownum as row_ from "+tableName+" t) where row_ >"+start+" and row_<="+start+limit;
 								List<Map<String,Object>> datas=jt.queryForList(sql);
-								LoggerHelper.debug(getClass(),"table:["+tableName+"] between "+start+" and "+(start+limit));
+								LoggerHelper.getLogger().debug(getClass(),"table:["+tableName+"] between "+start+" and "+(start+limit));
 								return datas;
 							}
 						});

@@ -11,8 +11,10 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.hw.sml.component.RcptFastJsonMapper;
 import org.hw.sml.shiro.model.ShiroUser;
 import org.hw.sml.shiro.service.IShiroUserService;
+import org.hw.sml.support.security.CyptoUtils;
 
 public class ShiroDBRealm extends AuthorizingRealm{
 	private IShiroUserService shiroUserService;
@@ -34,12 +36,14 @@ public class ShiroDBRealm extends AuthorizingRealm{
 			 throw new UnknownAccountException();
 		}
 		ShiroUser user =shiroUserService.queryShiroUser(up.getUsername());
-		if(user==null){
+		System.out.println(new RcptFastJsonMapper().toJson(user));
+		if(user.getPassword()==null){
 			throw new UnknownAccountException();
 		}
 		if(user.isLocked()){
 			throw new LockedAccountException();
 		}
+		up.setPassword(CyptoUtils.encode(user.getSalt(),new String(up.getPassword())).toCharArray());
 		return new SimpleAuthenticationInfo(user,user.getPassword(),getName());
 	}
 
