@@ -39,8 +39,6 @@ public class WebRouter extends Router{
 		responses.remove();
 	}
 	public static void doService(String requestMethod,String source) throws Throwable{
-		source=source.replace(getCurrentRequest().getContextPath()+"/","");
-		source=source.substring(source.indexOf("/"));
 		Source urlSource=checkPath(source);
 		if(urlSource==null){
 			getCurrentResponse().setStatus(HttpServletResponse.SC_NOT_FOUND);

@@ -292,7 +292,7 @@ public class SmlManageService extends RcptBaseService implements ISmlManageServi
 		excel.execute();
 	}
 	/**
-	 *uri      /sml/invoke/{beanName}/{method} 
+	 *uri      /sml/invoke/{beanName}/{method}/{mark}
 	 *所有bean只要符合上面uri都可以调用并用有@SmlResource注解
 	 * @param mark
 	 * @param request
@@ -309,13 +309,13 @@ public class SmlManageService extends RcptBaseService implements ISmlManageServi
 			WebTools.print(response,WebTools.buildResult(false,"bean["+mark+"] not support[@SmlResource]!",null));
 			 return;
 		}
-		String[] uris=WebTools.getUris(request.getRequestURI());
-		if(uris.length<5){
+		String[] uris=WebTools.getUris(request.getPathInfo());
+		if(uris.length<3){
 			WebTools.print(response,WebTools.buildResult(false,"uri error["+request.getRequestURI()+"]",null));
 			return;
 		}
-		String invokeMethod=uris[4];
-		String invokeMark=uris[5];
+		String invokeMethod=uris[2];
+		String invokeMark=uris.length>=3?uris[3]:"";
 		try {
 			Method method=invokeBean.getClass().getMethod(invokeMethod,String.class,HttpServletRequest.class,HttpServletResponse.class);
 			Object obj=method.invoke(invokeBean,invokeMark,request,response);
@@ -327,7 +327,6 @@ public class SmlManageService extends RcptBaseService implements ISmlManageServi
 				WebTools.print(response,WebTools.buildResult(true,"success",obj));
 			}
 		}catch (NoSuchMethodException e) {
-			
 			WebTools.print(response,WebTools.buildResult(false,"["+mark+"."+invokeMethod+"] not exists!",null));
 		}catch(InvocationTargetException t){
 			Throwable e = t.getTargetException();// 获取目标异常  
