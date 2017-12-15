@@ -1,0 +1,11 @@
+.tr_bgColor{
+	background: #fafafa;
+}
+.treeLoading {
+    background: url('../images/loading.gif') no-repeat center center;
+    display: inline-block;
+}
+a.function-icon:hover{
+    background-color: #fff;
+    color: #0085d0;
+}

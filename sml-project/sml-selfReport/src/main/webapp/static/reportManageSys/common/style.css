@@ -1,0 +1,223 @@
+/*修饰首页背景  */
+body{
+     /* background:url(../images/bg.jpg); */
+     background:#f9f9f9;
+     
+}
+
+
+/*修饰easyui框架 */
+.panel{
+	 /* background:url(../images/bg.jpg); */
+	 background:#f9f9f9;
+}
+.panel-body{
+	 /* background:url(../images/bg.jpg); */
+	 background:#f9f9f9;
+	 border-radius: 0px;
+}
+.panel-header{
+	 /* background:url(../images/bg.jpg); */
+	 background:#f9f9f9;
+}
+.tabs-wrap{
+	/* background:url(../images/bg.jpg); */
+	 background:#f9f9f9;     /* 拐角处 */
+}
+
+.tabs li.tabs-selected a.tabs-inner{
+	background-color: #fafafa;
+	background:#fafafa;
+	border-bottom: 1px;
+}
+
+.tabs li {
+    margin: 2px 4px -1px 0;
+}  
+ul.tabs{
+	height: 28px !important;
+}   
+.layout-panel-center{
+	margin-left: 1px
+}
+
+/* jqGrid表格 */
+ .ui-widget-content{
+	/* background:url(../images/bg.jpg); */
+} 
+.ui-state-default{
+	background-color：transparent !important;
+}     
+/* 修改弹框样式 */
+/* .modalContent{
+	background: url(../images/bg.jpg) repeat scroll left bottom;
+}
+.modalTOP{
+	border-bottom: 1px solid #3bb8fa;
+}
+
+.modalFoot{
+	border-top: 1px solid #3bb8fa;
+} */
+.modalContent{
+	background:#f8f8f8;
+}
+.modalTOP{
+	background: #0096eb;
+	border-bottom: 1px solid #3bb8fa;
+}
+
+.modalFoot{
+	border-top: 1px solid #3bb8fa;
+}
+.modal-title {   
+    color: white;
+}
+.close {
+    filter: alpha(opacity=100);
+    opacity: 1;
+}
+
+
+  /* 统一修改图标大小 */
+ .ecom_icons2{
+	font-size: 16px!important;
+    color: #0085d0;
+}
+
+/* 增添按钮钱图标 */
+
+.note_add{
+	   width:17px;
+	   height:16px;
+	   background:url(../images/note_add.png);
+	   display: inline-block;
+	   background-size: 15px;
+       position: relative;
+       top: 3px;
+}
+.note_cons{
+	   width:17px;
+	   height:16px;
+	   background:url(../images/note_cons.png);
+	   display: inline-block;
+	   background-size: 15px;
+       position: relative;
+       top: 3px;
+}
+.note_del{
+	   width:17px;
+	   height:16px;
+	   background:url(../images/note_del.png);
+	   display: inline-block;
+	   background-size: 15px;
+       position: relative;
+       top: 3px;
+}
+.note_edit{
+	   width:17px;
+	   height:16px;
+	   background:url(../images/note_edit.png);
+	   display: inline-block;
+	   background-size: 15px;
+       position: relative;
+       top: 3px;
+}
+.note_save{
+	   width:17px;
+	   height:16px;
+	   background:url(../images/note_save.png);
+	   display: inline-block;
+	   background-size: 15px;
+       position: relative;
+       top: 3px;
+}
+.note_search{
+	   width:17px;
+	   height:16px;
+	   background:url(../images/note_search.png);
+	   display: inline-block;
+	   background-size: 15px;
+       position: relative;
+       top: 3px;
+}
+.note_drag{
+	   width:17px;
+	   height:16px;
+	   background:url(../images/note_drag.png);
+	   display: inline-block;
+	   background-size: 15px;
+       position: relative;
+       top: 3px;
+}
+.note_power{
+	   width:17px;
+	   height:16px;
+	   background:url(../images/note_power.png);
+	   display: inline-block;
+	   background-size: 15px;
+       position: relative;
+       top: 3px;
+}
+.note_clear{
+	   width:17px;
+	   height:16px;
+	   background:url(../images/note_clear.png);
+	   display: inline-block;
+	   background-size: 15px;
+       position: relative;
+       top: 3px;
+}
+/* 修改所有字体大小 */
+
+span, div, lable, td, tr {
+	font-size :14px !important
+}
+
+/* 修改整项目线颜色 */
+input, select, textarea{
+	border: 1px solid #3bb8fa !important;
+}
+
+.panel-header,
+.panel-body {
+  border-color: #3bb8fa !important;
+}
+
+
+.tabs-header,
+.tabs-scroller-left,
+.tabs-scroller-right,
+.tabs-tool,
+.tabs,
+.tabs-panels,
+.tabs li a.tabs-inner,
+.tabs li.tabs-selected a.tabs-inner,
+.tabs-header-bottom .tabs li.tabs-selected a.tabs-inner,
+.tabs-header-left .tabs li.tabs-selected a.tabs-inner,
+.tabs-header-right .tabs li.tabs-selected a.tabs-inner {
+   border-color: #3bb8fa !important;
+}
+
+.panel-title {
+    color: #2196f3 !important;
+}
+.line7890{
+	border-color: #3bb8fa !important;
+}   /* class="line7890" */
+
+
+.con_menu {
+    background: url(images/tabbg_blue.png) !important;
+}
+.con_menu li {
+    border-left: 1px solid #3bb8fa !important;
+}
+
+#seek{
+	border-left: 1px solid #3bb8fa !important;
+	border-right: 1px solid #3bb8fa !important;
+}
+
+
+

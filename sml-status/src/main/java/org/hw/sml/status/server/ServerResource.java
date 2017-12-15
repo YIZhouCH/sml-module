@@ -45,7 +45,7 @@ public class ServerResource {
 	}
 	@SmlResource(value="regist",method=SmlResource.POST)
 	public Object regist(@Body Map<String,Object> status,IHTTPSession session){
-		status.put("lastTime",DateTools.sdf_mi.format(new Date()));
+		status.put("lastTime",DateTools.sdf_mi().format(new Date()));
 		status.put("remoteIp",session.getRemoteIpAddress());
 		sources.put("http://"+session.getRemoteIpAddress()+":"+status.get("serverPort")+"/"+(status.get("serverContextPath")==null?"":status.get("serverContextPath")), status);
 		return "1";

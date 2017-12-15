@@ -35,14 +35,14 @@ public class MybatisProxyService{
 	@Init(igErr=true)
 	public void init() {
 		if(dss==null){
-			LoggerHelper.error(getClass(),"jdbcMybatisDss bean is not configed!");
+			LoggerHelper.getLogger().error(getClass(),"jdbcMybatisDss bean is not configed!");
 			return;
 		}
 		if(mapperResource==null){
-			LoggerHelper.error(getClass(),"mapperResource bean is not configed!");
+			LoggerHelper.getLogger().error(getClass(),"mapperResource bean is not configed!");
 			return;
 		}
-		LoggerHelper.info(getClass(),"mybatis mapppers -->"+mapperResource);
+		LoggerHelper.getLogger().info(getClass(),"mybatis mapppers -->"+mapperResource);
 		sessions=MapUtils.newHashMap();
 		for(Map.Entry<String,DataSource> entry:dss.entrySet()){
 			TransactionFactory transactionFactory = new JdbcTransactionFactory();

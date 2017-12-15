@@ -1,0 +1,62 @@
+body {
+    background: white;
+    height: 700px
+}
+
+body, div {
+    padding: 0;
+    margin: 0;
+}
+
+.content {
+    padding: 20px 35px;
+}
+
+.content_td_input_time {
+    margin-top: 0;
+    height: 18px;
+    width: 90%;
+}
+
+.content_td_input_text {
+    margin-top: 0;
+    height: 34px;
+    width: 90%;
+}
+
+.content_td_left {
+    width: 70px;
+}
+
+.content_td_time_right {
+    width: 150px;
+}
+
+.content_td_text_right {
+    width: 130px;
+}
+
+.div_newAdd {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.div_main_table {
+    height: 400px;
+    width: 1149px
+}
+
+.modal_div_tree{
+    width: 298px; padding: 10px; height: 579px;
+}
+
+.close {
+    background-image: url('./img/close.png');
+    cursor: pointer;
+    width: 32px;
+    height: 35px;
+    position: absolute;
+    top: -4px;
+    right: 0px;
+    background-repeat: no-repeat;
+}

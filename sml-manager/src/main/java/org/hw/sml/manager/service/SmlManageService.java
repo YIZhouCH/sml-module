@@ -315,7 +315,7 @@ public class SmlManageService extends RcptBaseService implements ISmlManageServi
 			return;
 		}
 		String invokeMethod=uris[2];
-		String invokeMark=uris.length>=3?uris[3]:"";
+		String invokeMark=uris.length>=4?uris[3]:"";
 		try {
 			Method method=invokeBean.getClass().getMethod(invokeMethod,String.class,HttpServletRequest.class,HttpServletResponse.class);
 			Object obj=method.invoke(invokeBean,invokeMark,request,response);
@@ -327,6 +327,7 @@ public class SmlManageService extends RcptBaseService implements ISmlManageServi
 				WebTools.print(response,WebTools.buildResult(true,"success",obj));
 			}
 		}catch (NoSuchMethodException e) {
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			WebTools.print(response,WebTools.buildResult(false,"["+mark+"."+invokeMethod+"] not exists!",null));
 		}catch(InvocationTargetException t){
 			Throwable e = t.getTargetException();// 获取目标异常  

@@ -49,7 +49,7 @@ public class CsvCreater {
 			Object hvt=records.get(hs[0]);
 			if(hvt!=null&&String.valueOf(hvt).length()>0){
 				if(hs.length==2){
-					hv=DateTools.sdf_mi.format(hvt);
+					hv=DateTools.sdf_mi().format(hvt);
 				}else{
 					hv=String.valueOf(hvt);
 				}

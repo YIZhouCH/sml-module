@@ -1,0 +1,9 @@
+<%@ include file="/commonSelfReport/lib.jsp"%>
+<%@ include file="/commonSelfReport/fontawesome/fontawesome4.3.0.jsp"%>
+<%@ include file="/commonSelfReport/bootstrap.jsp"%>
+<%@ include file="/pages/reportManageSys/aTableTitle.jsp" %>
+<%@ include file="/pages/commonSelfReport/inas-common.jsp"%>
+<%@ include file="/pages/commonSelfReport/inas-product-style.jsp"%>
+<%@ include file="/pages/commonSelfReport/inas-loadmask.jsp"%>
+<%@ include file="/pages/commonSelfReport/inas-my97.jsp"%>
+<%@ include file="/commonSelfReport/echarts.jsp"%>

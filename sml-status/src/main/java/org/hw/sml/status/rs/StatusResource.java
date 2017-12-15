@@ -32,7 +32,7 @@ public class StatusResource {
 				.put("maxMemory",df.format(SystemHelper.maxMemory()/1024.0/1024))
 				.put("useMemoryUtility",df.format(SystemHelper.useMemoryUtility()))
 				//.put("availableProcessors",SystemHelper.availableProcessors())
-				.put("upTime",DateTools.sdf_mi.format(SystemHelper.getStartTime()))
+				.put("upTime",DateTools.sdf_mi().format(SystemHelper.getStartTime()))
 				.put("serverPort",SystemHelper.getServerPort())
 				.put("serverContextPath",SystemHelper.getServerContextPath())
 				.put("activeCount",SystemHelper.activeCount())

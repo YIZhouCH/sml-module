@@ -1,56 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
-<%-- <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> --%>
-<%-- <c:set var="ctx" value="${pageContext.request.contextPath}"/> --%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<%-- <%@ include file="/common/lib.jsp" %> --%>
-	<%-- <%@ include file="/common/fontawesome/fontawesome4.3.0.jsp" %> --%>
-	
-	<%-- <%@ include file="/common/bootstrap.jsp" %> --%>
-	<%-- <%@ include file="/pages/common/jquery-ui-bootstrap.jsp" %> --%>
-	<%-- <%@ include file="/pages/common/inas-common.jsp" %> --%>
-	
-	<%-- <%@ include file="/pages/common/inas-product-style.jsp" %> --%>
-	<%-- <%@ include file="/pages/common/inas-loadmask.jsp" %> --%>
-	<%-- <%@ include file="/pages/common/inas-my97.jsp" %> --%>
-	<%-- <%@ include file="/common/echarts.jsp" %> --%>
-	
-	<!-- 引用jQuery -->
-	<script src="../../scripts/interfaceManager/common/jquery-1.12.4.min.js" type="text/javascript"></script>
-	
-	<!-- 引用bootstrap -->
-	<script src="../../scripts/interfaceManager/bootstrap-3.3.0/js/bootstrap.js" type="text/javascript"></script>
-	<script src="../../scripts/interfaceManager/bootstrap-3.3.0/js/bootstrap.min.js" type="text/javascript"></script>
-	<link href="../../scripts/interfaceManager/bootstrap-3.3.0/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-	
-	<!-- 引用easyui -->
-	<script src="../../scripts/interfaceManager/jquery.easyui-1.4/jquery.easyui.min.js" type="text/javascript"></script>
-	<script src="../../scripts/interfaceManager/jquery.easyui-1.4/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
-	<link href="../../scripts/interfaceManager/jquery.easyui-1.4/themesO/bootstrap/easyui.css" rel="stylesheet" type="text/css"/>
-	<link href="../../scripts/interfaceManager/jquery.easyui-1.4/themesO/icon.css" rel="stylesheet" type="text/css"/>
-	
-	<!-- 引用服务器css -->
-	<link href="../../static/interfaceManager/common/common-all.css" rel="stylesheet" type="text/css"/>
-	<link href="../../static/interfaceManager/common/jquery-ui-1.10.3.custom.css" rel="stylesheet" type="text/css"/>
-	<!-- <link href="../../static/interfaceManager/common/common.css" rel="stylesheet" type="text/css"/> -->
-	<!-- <link href="../../static/interfaceManager/common/homepage.css" rel="stylesheet" type="text/css"/> -->
-	<!-- <link href="../../static/interfaceManager/common/style.css" rel="stylesheet" type="text/css"/> -->
-	<!-- <link href="../../static/interfaceManager/common/table.css" rel="stylesheet" type="text/css"/> -->
-	
-	<!-- 引用easyui框架 -->
-	<!-- <script type="text/javascript" src="easyui/jquery.easyui.min.js"></script> -->
-	<!-- <script type="text/javascript" src="easyui/locale/easyui-lang-zh_CN.js"></script> -->
-	<!-- <link rel="stylesheet" type="text/css" href="themes/bootstrap/easyui.css"/> -->
-	<!-- <link rel="stylesheet" type="text/css" href="themes/icon.css"/> -->
-	<!-- <link rel="stylesheet" type="text/css" href="easyui/style/css/statisticalforms.css"/> -->
-	
-	<!-- 自定义js -->
-	<script src="../../scripts/interfaceManager/common/jquery.json-2.4.min.js" type="text/javascript"></script>
-	<script src="../../scripts/interfaceManager/common/util.js" type="text/javascript"></script>
-	<script src="../../scripts/interfaceManager/egQuery.js" type="text/javascript"></script>
-	<link href="../../static/interfaceManager/egQuery.css" rel="stylesheet" type="text/css" />
+	<%@include file="./common.jsp" %>
+	<script src="${ctxPath}/scripts/interfaceManager/egQuery.js" type="text/javascript"></script>
+	<link href="./css/egQuery.css" rel="stylesheet" type="text/css" />
 	<script type="text/javascript">
 	</script>
 </head>

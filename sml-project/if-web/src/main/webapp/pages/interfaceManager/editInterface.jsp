@@ -3,29 +3,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<!-- 引用jQuery -->
-	<script src="../../scripts/interfaceManager/common/jquery-1.12.4.min.js" type="text/javascript"></script>
-	
-	<!-- 引用bootstrap -->
-	<script src="../../scripts/interfaceManager/bootstrap-3.3.0/js/bootstrap.js" type="text/javascript"></script>
-	<script src="../../scripts/interfaceManager/bootstrap-3.3.0/js/bootstrap.min.js" type="text/javascript"></script>
-	<link href="../../scripts/interfaceManager/bootstrap-3.3.0/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-	
-	<!-- 引用easyui -->
-	<script src="../../scripts/interfaceManager/jquery.easyui-1.4/jquery.easyui.min.js" type="text/javascript"></script>
-	<script src="../../scripts/interfaceManager/jquery.easyui-1.4/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
-	<link href="../../scripts/interfaceManager/jquery.easyui-1.4/themesO/bootstrap/easyui.css" rel="stylesheet" type="text/css"/>
-	<link href="../../scripts/interfaceManager/jquery.easyui-1.4/themesO/icon.css" rel="stylesheet" type="text/css"/>
-	
-	<!-- 引用服务器css -->
-	<link href="../../static/interfaceManager/common/common-all.css" rel="stylesheet" type="text/css"/>
-	<link href="../../static/interfaceManager/common/jquery-ui-1.10.3.custom.css" rel="stylesheet" type="text/css"/>
-
-	<!--自己的js-->
-	<script src="../../scripts/interfaceManager/common/jquery.json-2.4.min.js" type="text/javascript"></script>
-	<script src="../../scripts/interfaceManager/common/util.js" type="text/javascript"></script>
-	<script src="../../scripts/interfaceManager/editInterface.js" type="text/javascript"></script>
-	<link href="../../static/interfaceManager/editInterface.css" rel="stylesheet" type="text/css" />
+	<%@include file="./common.jsp" %>
+	<script src="${ctxPath}/scripts/interfaceManager/editInterface.js"></script>
+	<link href="./css/editInterface.css" rel="stylesheet" type="text/css"/>
 <style type="text/css">
 .selected{
 background: #5cbdf4;
@@ -121,10 +101,6 @@ cursor: pointer;
 			<td><input id="parent_id" type="text"/></td>
 			<td><input id="update_time" type="text"/></td>
 		</tr>
-		<!-- <tr>
-			<th><label>操作时间:</label></th>
-			<td><input id="update_time" type="text" disabled="disabled"/></td>
-		</tr> -->
 	</table>
 </div>
 
@@ -151,22 +127,12 @@ cursor: pointer;
 						<td style="width:15%; padding: 8px 8px 0 8px; text-align: center; vertical-align: middle;">默认值</td>
 						<td style="width:40%; padding: 8px 8px 0 8px; text-align: center; vertical-align: middle;">备注<span style="color: red">*</span></td>
 						<td style="width:50px; padding: 8px 14px 0 0px; text-align: center; vertical-align: middle;">是否<br />必选</td>
-						<td style="width:40px; padding: 8px 8px 0 0px; text-align: center; vertical-align: middle;"><a href="JavaScript:void(0)" onclick="editInterface.addParam();" ><img src="../../static/interfaceManager/images/plus.png"/></a></td>
+						<td style="width:40px; padding: 8px 8px 0 0px; text-align: center; vertical-align: middle;"><a href="JavaScript:void(0)" onclick="editInterface.addParam();" ><img src="./css/style/images/plus.png"/></a></td>
 					</tr>
 				</table>
 			</div>
 			<div class="modal-body"  style="height:360px; padding: 0 15px 15px 15px; overflow: auto;">
 				<table id="addParam" class="table">
-					<!-- <thead>
-						<tr>
-							<td style="width:20%;">参数英文名称<span style="color: red">*</span></td>
-							<td style="width:15%;">类型</td>
-							<td style="width:15%;">默认值</td>
-							<td style="width:40%;">备注<span style="color: red">*</span></td>
-							<td style="width:60px;">是否<br />必选</td>
-							<td style="width:60px;"><a href="JavaScript:void(0)" onclick="editInterface.addParam();" ><img src="../../static/interfaceManager/images/plus.png"/></a></td>
-						</tr>
-					</thead> -->
 					<thead>
 						<tr>
 							<td style="width:20%;"></td>
@@ -189,11 +155,13 @@ cursor: pointer;
 		</div>
 	</div>
 </div>
- <div style="width:180px;display: none;z-index: 999999" id="sel_div"><ul class="form-control" style="height:100%;" id="bq_sel" >
+ <div style="width:180px;display: none;z-index: 999999" id="sel_div">
+ 	<ul class="form-control" style="height:100%;" id="bq_sel" >
 			<li val="if">if表达示</li>
 			<li val="isNet">isNotEmpty</li>
 			<li val="isEt">isEmpty</li>
-		</ul></div>
+	</ul>
+</div>
 
 </body>
 </html>

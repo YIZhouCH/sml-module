@@ -16,7 +16,7 @@ public class RcptBaseController{
 	}
 	
 	public Map<String,Object> buildResult(boolean successMark,String msg,Object result){
-		return WebTools.buildResult(successMark, msg, result);
+		return (Map<String, Object>) WebTools.buildResult(successMark, msg, result);
 	}
 	public String toJson(Object obj){
 		return WebTools.toJson(obj);

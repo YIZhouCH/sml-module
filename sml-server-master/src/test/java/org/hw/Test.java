@@ -24,7 +24,6 @@ public class Test {
 	StopWatch sw=null;
 	@SmlResource("proxy1")
 	public Object query2(String params) throws IOException{
-	
 		return params;
 	}
 	@SmlResource("proxy2")

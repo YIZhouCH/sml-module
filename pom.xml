@@ -19,5 +19,9 @@
 		<module>sml-mybatis</module>
 		<module>sml-server-jetty</module>
 		<module>sml-http</module>
+		<module>sml-redis</module>
+		<module>sml-char</module>
+		<module>sml-springmvc-web</module>
+		<module>sml-project</module>
 	</modules>
 </project>

@@ -1,0 +1,2 @@
+<script src="${jslib}/inas/jquery/ux/jquery.ux.loadMask.js" type="text/javascript"></script>
+<%-- <script src="${ctx}/static/jslib/inas/jquery/ux/jquery.ux.loadMask.js" type="text/javascript"></script> --%>

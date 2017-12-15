@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.hw.sml.component.RcptFastJsonMapper;
+import org.hw.sml.queryplugin.JsonMapper;
 import org.hw.sml.rest.annotation.Body;
 import org.hw.sml.rest.annotation.Param;
 import org.hw.sml.rest.annotation.PathParam;
@@ -35,7 +36,7 @@ import org.hw.sml.tools.RegexUtils;
 public class Router {
 	protected static Class<Router> LOG=Router.class;
 	protected static  Map<String,String> urlrewrite=MapUtils.newHashMap();
-	protected static RcptFastJsonMapper jsonMapper=new RcptFastJsonMapper();
+	protected static JsonMapper jsonMapper=new RcptFastJsonMapper();
 	public static final String KEY_URLREWRITE="urlrewrite.";
 	public static final String KEY_URLMAPPER="urlMapper.";
 	public static class Source{

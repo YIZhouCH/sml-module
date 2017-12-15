@@ -11,7 +11,6 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.hw.sml.component.RcptFastJsonMapper;
 import org.hw.sml.shiro.model.ShiroUser;
 import org.hw.sml.shiro.service.IShiroUserService;
 import org.hw.sml.support.security.CyptoUtils;
@@ -36,7 +35,6 @@ public class ShiroDBRealm extends AuthorizingRealm{
 			 throw new UnknownAccountException();
 		}
 		ShiroUser user =shiroUserService.queryShiroUser(up.getUsername());
-		System.out.println(new RcptFastJsonMapper().toJson(user));
 		if(user.getPassword()==null){
 			throw new UnknownAccountException();
 		}

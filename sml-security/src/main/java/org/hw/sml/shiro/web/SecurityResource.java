@@ -9,7 +9,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
-import org.hw.sml.manager.context.WebRouter;
 import org.hw.sml.rest.annotation.Param;
 import org.hw.sml.rest.annotation.SmlResource;
 import org.hw.sml.shiro.ShiroFilterFactoryBean;
@@ -22,8 +21,9 @@ import org.hw.sml.support.ioc.annotation.Bean;
 @SmlResource("security")
 public class SecurityResource {
 	@SmlResource(value="login",method=SmlResource.POST)
-	public void login(@Param("username")String username,@Param("password")String password,@Param("verCode")String verCode) throws Exception{
-		String reqCode=(String) WebRouter.getCurrentRequest().getSession().getAttribute("verCode");
+	public void login(@Param("username")String username,@Param("password")String password,@Param("verCode")String verCode,HttpServletResponse response,HttpServletRequest request) throws Exception{
+		String reqCode=(String) request.getSession().getAttribute("verCode");
+		request.getSession().removeAttribute("verCode");
 		if(!reqCode.equalsIgnoreCase(verCode)){
 			throw new Exception("验证码错误!");
 		}
@@ -31,17 +31,18 @@ public class SecurityResource {
 		UsernamePasswordToken upt=new UsernamePasswordToken(username, password);
 		try{
 			subject.login(upt);
-		  WebRouter.getCurrentResponse().sendRedirect(WebRouter.getCurrentRequest().getContextPath()+BeanHelper.getBean(ShiroFilterFactoryBean.class).getSuccessUrl());
+			response.sendRedirect(request.getContextPath()+BeanHelper.getBean(ShiroFilterFactoryBean.class).getSuccessUrl());
 		}catch(Exception e){
 			LoggerHelper.error(getClass(),"登录失败：["+e.getMessage()+"]");
-			throw e;
+			request.setAttribute("msg",e.getMessage());
+			response.getOutputStream().print(e.getMessage());
 		}
 	}
 	@SmlResource("logout")
-	public String logout(){
+	public String logout() throws IOException{
 		Subject subject=SecurityUtils.getSubject();
 		subject.logout();
-		return "redirect:"+BeanHelper.getBean(ShiroFilterFactoryBean.class).getLoginUrl();
+		return "success";
 	}
 	@SmlResource("captcha")
 	public void image(HttpServletResponse response,HttpServletRequest request) throws IOException{

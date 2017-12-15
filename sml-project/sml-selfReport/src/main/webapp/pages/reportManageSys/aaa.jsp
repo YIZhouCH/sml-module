@@ -1,0 +1,1 @@
+<c:set var="IsBlueThemes" value="trues"/>

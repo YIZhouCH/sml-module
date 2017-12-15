@@ -1,0 +1,36 @@
+body {
+    background: white;
+}
+
+body, div {
+    padding: 0;
+    margin: 0;
+}
+
+.content {
+    padding: 20px 35px;
+}
+
+.td_left {
+    width: 70px;
+}
+
+.td_right {
+    width: 130px;
+}
+
+.td_input {
+    margin-top: 0;
+    height: 34px;
+    width: 90%;
+}
+
+.modal-content {
+    width: 405px;
+    left: 94px;
+}
+
+.modal_td_input {
+    height: 34px;
+    width: 180%;
+}
