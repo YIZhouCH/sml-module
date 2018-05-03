@@ -9,4 +9,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.PARAMETER})
 public @interface PathParam {
 	String value();
+	String descr() default "";
+	String[] enumStrs() default {};
+	String type() default "string";
 }

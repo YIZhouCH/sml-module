@@ -10,4 +10,9 @@ import java.lang.annotation.Target;
 public @interface Param {
 	String value();
 	String defaultValue() default "";
+	String descr() default "";
+	String type() default "string";
+	boolean must() default false;
+	String[] enumStrs() default {};
+	String pos() default "param";
 }

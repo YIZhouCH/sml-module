@@ -378,7 +378,7 @@ public class SvnUpload {
     }
     public static void send(String name,int weeks,String targetFile){
     	 try {
-             String svnUrl = "svn://192.168.1.138/SHdevManaged/worklog/2017/2017-"+weeks;
+             String svnUrl = "svn://192.168.1.138/SHdevManaged/worklog/2018/2018-"+weeks;
              String username = "huangwen";
              String passwd = "huangwen021";
              String workspace = "E:/work/工作记录/工作日志";
@@ -386,14 +386,14 @@ public class SvnUpload {
              String filenamelast="工作日志-"+name+"-上海研发部－"+(weeks-1)+"周.xls";
              try{
 	             if(targetFile==null){
-	            	 new File(workspace+"/2017/"+filenamelast).renameTo(new File(workspace+"/2017/"+filenamet));
+	            	 new File(workspace+"/2018/"+filenamelast).renameTo(new File(workspace+"/2018/"+filenamet));
 	             }else{
-	            	 new File(targetFile).renameTo(new File(workspace+"/2017/"+filenamet));
+	            	 new File(targetFile).renameTo(new File(workspace+"/2018/"+filenamet));
 	             }
              }catch(Exception e){
             	 e.printStackTrace();
              }
-             String upfile = "/2017/"+filenamet;
+             String upfile = "/2018/"+filenamet;
              Boolean isOverwrite = false;
              SvnUpload svnUpload = new SvnUpload(svnUrl,username, passwd);
              String [] fileArray = upfile.split(",");
@@ -415,7 +415,7 @@ public class SvnUpload {
     //第二个参数多少周
     //第三个参数为null默认提交上一周，也可指定本地一个文件路径
     public static void main(String[] args) throws SVNException {
-      send("黄文",47,null);
+      send("黄文",14,null);
     }
 
 }

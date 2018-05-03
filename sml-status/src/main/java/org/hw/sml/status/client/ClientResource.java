@@ -29,7 +29,7 @@ public class ClientResource {
 			if(severUrl==null){
 				return;
 			}
-			String result=Https.newPostHttps(severUrl+"/regist").body(JSON.toJSONString(statusResource.status())).execute();
+			String result=Https.newPostHttps(severUrl+"/regist").connectTimeout(2000).withReadTimeout(2000).body(JSON.toJSONString(statusResource.status())).execute();
 			LoggerHelper.getLogger().debug(getClass(),"status sended! recieved->"+result);
 		} catch (Exception e) {
 			LoggerHelper.getLogger().error(getClass(),"status send error["+e.toString()+"]");

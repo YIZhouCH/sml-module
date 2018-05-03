@@ -8,13 +8,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hw.sml.manager.context.ResponseContext;
 import org.hw.sml.manager.context.WebRouter;
 import org.hw.sml.manager.service.ServiceBean;
 import org.hw.sml.manager.service.SmlServletBean;
 import org.hw.sml.support.ioc.BeanHelper;
 
 public class SmlServlet extends HttpServlet{
-
+	
 	/**
 	 * 
 	 */
@@ -39,7 +40,13 @@ public class SmlServlet extends HttpServlet{
 			throws ServletException, IOException {
 		response.setCharacterEncoding(this.postCharset);
 		request.setCharacterEncoding(this.postCharset);
-		targetBean.service(request,response);
+		try{
+			targetBean.service(request,response);
+		}catch(IOException e){
+			throw e;
+		}finally{
+			ResponseContext.release();
+		}
 	}
 	
 }

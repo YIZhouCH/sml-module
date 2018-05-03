@@ -23,6 +23,8 @@ public class WebRouter extends Router{
 	private static ThreadLocal<HttpServletRequest> requests=new ThreadLocal<HttpServletRequest>();
 	
 	private static ThreadLocal<HttpServletResponse> responses=new ThreadLocal<HttpServletResponse>();
+	
+	
 
 	public static void set(HttpServletRequest request,HttpServletResponse response){
 		requests.set(request);
@@ -34,6 +36,7 @@ public class WebRouter extends Router{
 	public static HttpServletResponse getCurrentResponse(){
 		return responses.get();
 	}
+
 	public static void release(){
 		requests.remove();
 		responses.remove();
@@ -96,6 +99,7 @@ public class WebRouter extends Router{
 		}
 		try {
 			Object result=method.invoke(urlSource.getBean(),params);
+			ResponseContext.setResponseBody(result);
 			if(result!=null){
 				if(result instanceof String&&result.toString().startsWith(WebTools.REDIRECT)){
 					getCurrentRequest().getRequestDispatcher(result.toString().replaceFirst(WebTools.REDIRECT,"")).forward(getCurrentRequest(), getCurrentResponse());

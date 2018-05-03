@@ -12,6 +12,7 @@ public @interface SmlResource {
     String method() default "";
     String produces() default APPLICATION_JSON;
     String charset() default "utf-8";
+    String descr() default "";
 	
 	public static final String GET="GET";
 	public static final String POST="POST";
