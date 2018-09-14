@@ -13,11 +13,15 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 public class RedisPoolCacheManager implements CacheManager{
-	private String url;
+	protected boolean useKeys=true;
 	
-	private JedisPool jedisPool;
+	protected String cacheKeysKey="sml:keys";
 	
-	private RedisTemplate redisTemplate;
+	protected String url;
+	
+	protected JedisPool jedisPool;
+	
+	protected RedisTemplate redisTemplate;
 	
 	public void init() {
 		if(url!=null&&jedisPool==null){
@@ -49,6 +53,9 @@ public class RedisPoolCacheManager implements CacheManager{
 				jedis.set(toByte(key),SerializationUtils.serialize((Serializable)value));
 				if(minutes>0)
 				jedis.expire(toByte(key), minutes*60);
+				if(!useKeys){
+					jedis.hset(cacheKeysKey,key,String.valueOf(System.currentTimeMillis()));
+				}
 				return null;
 			}
 		});
@@ -78,9 +85,17 @@ public class RedisPoolCacheManager implements CacheManager{
 			return 0;
 		return redisTemplate.execute(new RedisCallback<Integer>() {
 			public Integer doJedisCallback(Jedis jedis) {
-				Set<String> keys=jedis.keys(keyStart+"*");
-				long size=jedis.del(keys.toArray(new String[]{}));
-				return (int)size;
+				if(useKeys){
+					Set<String> keys=jedis.keys(keyStart+"*");
+					long size=jedis.del(keys.toArray(new String[]{}));
+					return (int)size;
+				}else{
+					Set<String> keys=getKeyStart(keyStart).keySet();
+					for(String key:keys){
+						jedis.del(key);
+					}
+					return keys.size();
+				}
 			}
 		});
 	}
@@ -90,9 +105,20 @@ public class RedisPoolCacheManager implements CacheManager{
 		return redisTemplate.execute(new RedisCallback<Map<String, Object>>() {
 			public Map<String, Object> doJedisCallback(Jedis jedis) {
 				Map<String,Object> result=MapUtils.newLinkedHashMap();
-				Set<String> keys=jedis.keys(keyStart+"*");
-				for(String key:keys){
-					result.put(key,null);
+				if(useKeys){
+					Set<String> keys=jedis.keys(keyStart+"*");
+					for(String key:keys){
+						result.put(key,null);
+					}
+				}else{
+					Set<String> keys=jedis.hkeys(cacheKeysKey);
+					for(String key:keys){
+						if(jedis.exists(key)){
+							result.put(key,null);
+						}else{
+							jedis.del(key);
+						}
+					}
 				}
 				return result;
 			}
@@ -110,6 +136,18 @@ public class RedisPoolCacheManager implements CacheManager{
 	}
 	public void setJedisPool(JedisPool jedisPool) {
 		this.jedisPool = jedisPool;
+	}
+	public boolean isUseKeys() {
+		return useKeys;
+	}
+	public void setUseKeys(boolean useKeys) {
+		this.useKeys = useKeys;
+	}
+	public String getCacheKeysKey() {
+		return cacheKeysKey;
+	}
+	public void setCacheKeysKey(String cacheKeysKey) {
+		this.cacheKeysKey = cacheKeysKey;
 	}
 	
 }

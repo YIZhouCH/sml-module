@@ -9,24 +9,27 @@ import org.hw.sml.redis.RedisTemplate;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisSentinelPool;
 
 public class Test {
 	public static void main(String[] args) {
-		//JedisPool jedisPool=JedisPoolFactory.create("redis://wenjimmy@localhost:16379/1?maxTotal=1"); 
-		//RedisTemplate rt=new RedisTemplate(jedisPool);
-		RedisPoolCacheManager cacheManager=new RedisPoolCacheManager();
-		//cacheManager.setJedisPool(jedisPool);
-		cacheManager.setUrl("redis://wenjimmy@localhost:16379/1?maxTotal=1&maxActive=1");
-		cacheManager.init();
-		for(int i=0;i<1;i++){
-			final String t=i+"";
-			//cacheManager.set("test:"+t, t, -1);
-			/*System.out.println(rt.execute(new RedisCallback<Set<String>>() {
-				public Set<String> doJedisCallback(Jedis jedis) {
-					return jedis.keys("*");
-				}
-			}));*/
-			System.out.println(cacheManager.getKeyStart(""));
-		}
+		JedisPool jedisPool=JedisPoolFactory.create("redis://eastcom!@#$@10.222.42.10:6380/0?maxTotal=1&maxActive=1&hostAndPorts=192.168.193.128:7002,192.168.193.128:7003,192.168.193.128:7004,192.168.193.128:7005,192.168.193.128:7006"); 
+		RedisTemplate rt=new RedisTemplate(jedisPool);
+		/*rt.execute(new RedisCallback<Object>() {
+			public Object doJedisCallback(Jedis jedis) {
+				jedis.hset("student","weiht","60.0");
+				return null;
+			}
+		});*/
+		System.out.println(rt.execute(new RedisCallback<Object>() {
+			public Object doJedisCallback(Jedis jedis) {
+				return jedis.hkeys("student");
+			}
+		}));
+		System.out.println(rt.execute(new RedisCallback<Object>() {
+			public Object doJedisCallback(Jedis jedis) {
+				return jedis.keys("*");
+			}
+		}));
 	}
 }

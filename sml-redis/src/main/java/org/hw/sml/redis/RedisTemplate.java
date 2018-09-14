@@ -1,30 +1,74 @@
 package org.hw.sml.redis;
 
-import java.lang.reflect.Method;
-
+import org.hw.sml.redis.cluster.JedisClusterFactory;
+import org.hw.sml.redis.sentinel.JedisSentinelFactory;
+import org.hw.sml.support.LoggerHelper;
 import org.hw.sml.tools.Assert;
-import org.hw.sml.tools.ClassUtil;
+import org.hw.sml.tools.Urls;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisSentinelPool;
 
 public class RedisTemplate {
-	private JedisPool jedisPool;
+	public static  enum RT{
+		jedis,jedisPool,jedisSentinelPool,jedisCluster
+	}
 	private Jedis jedis;
+	private RT rt=RT.jedis;
+	private JedisPool jedisPool;
+	private JedisSentinelPool jedisSentinelPool;
+	private JedisCluster jedisCluster;
 	public RedisTemplate(){
+	}
+	public RedisTemplate(String url){
+		Urls urls=new Urls(url);
+		if(urls.getParams().get("master")!=null){
+			this.jedisSentinelPool=JedisSentinelFactory.create(url);
+			rt=RT.jedisSentinelPool;
+		}else if(urls.getParams().get("hostAndPorts")!=null){
+			this.jedisCluster=JedisClusterFactory.create(url);
+			rt=RT.jedisCluster;
+		}else{
+			this.jedisPool=JedisPoolFactory.create(url);
+			rt=RT.jedisPool;
+		}
 	}
 	public RedisTemplate(JedisPool jedisPool){
 		this.jedisPool=jedisPool;
+		rt=RT.jedisPool;
 	}
 	public RedisTemplate(Jedis jedis){
 		this.jedis=jedis;
 	}
+	public RedisTemplate(JedisSentinelPool jedisSentinelPool){
+		this.jedisSentinelPool=jedisSentinelPool;
+		rt=RT.jedisSentinelPool;
+	}
+	public Jedis getResource(){
+		Jedis jd=null;
+		switch (rt) {
+		case jedisPool:
+			jd=this.jedisPool.getResource();
+			break;
+		case jedisSentinelPool:
+			jd=this.jedisSentinelPool.getResource();
+			break;
+		default:
+			jd=this.jedis;
+			break;
+		}
+		Assert.notNull(jd,"jedis or poolJedis or jedisSentinelPool is not null!");
+		return jd;
+	}
+	public JedisCluster getCluster(){
+		return this.jedisCluster;
+	}
 	public <T> T execute(RedisCallback<T> call){
-		Jedis jedise=this.jedis;
+		Jedis jedise=null;
 		try{
-			if(jedisPool!=null)
-			jedise=jedisPool.getResource();
-			Assert.notNull(jedise,"jedis or poolJedis is not null!");
+			jedise=getResource();
 			return call.doJedisCallback(jedise);
 		}catch(Exception e){
 			throw new RuntimeException(e);
@@ -33,30 +77,26 @@ public class RedisTemplate {
 				close(jedise);
 		}
 	}
-	
-	
-	
-	private Boolean hasBorkenMethod;
-	private Method method;
 	public void close(Jedis jedise) {
-		if (this.jedisPool != null) {
-			if(hasBorkenMethod==null){
-				method=ClassUtil.getMethod(jedise.getClient().getClass(),"isBroken");
-				hasBorkenMethod=method!=null;
-			}else{
-				if(hasBorkenMethod){
-					try {
-						boolean flag=(Boolean) method.invoke(jedise,new Object[]{});
-						if(flag){
-							this.jedisPool.returnBrokenResource(jedise);
-						}
-					}catch (Exception e) {
-					} 
-				}
-			}
-			jedise.getClient();
-			this.jedisPool.returnResource(jedise);
-		} else
-			jedise.disconnect();
+		jedise.close();
 	}
+	public void destroy(){
+		if(jedisPool!=null){
+			jedisPool.close();
+		}
+		if(jedisSentinelPool!=null){
+			jedisPool.close();
+		}
+		if(jedisCluster!=null){
+			try {
+					jedisCluster.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			};
+			}
+	}
+	public RT getRt() {
+		return rt;
+	}
+	
 }	

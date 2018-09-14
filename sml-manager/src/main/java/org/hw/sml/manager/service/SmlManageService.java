@@ -154,7 +154,9 @@ public class SmlManageService extends RcptBaseService implements ISmlManageServi
 					if(!queryStatus.equals(COMMON))
 					params.put("ifId",queryStatus);
 					Result pages=super.page(params);
-					result=new PageObject(pages.getDatas(),pages.getCount(),Integer.parseInt(params.get("page")),Integer.parseInt(params.get("limit")));
+					PageObject resultt=new PageObject(pages.getDatas(),pages.getCount(),Integer.parseInt(params.get("page")),Integer.parseInt(params.get("limit")));
+					resultt.setExtInfo(pages.getExtInfo());
+					result=resultt;
 				}else{//body接参数或者
 					Map<String,String> params=WebTools.toMap(request);
 					String body=WebTools.getRequestBody(request);

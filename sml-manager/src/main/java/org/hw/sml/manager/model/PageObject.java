@@ -3,6 +3,7 @@ package org.hw.sml.manager.model;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 public class PageObject implements Serializable {
 	private static final long serialVersionUID = -3213277316190699360L;
@@ -16,6 +17,8 @@ public class PageObject implements Serializable {
 	private int pageNum = 0;//总页数
 
 	private int pageSize = 15;// 每页条数
+	
+	private Map<String,Object> extInfo;
 
 	public PageObject() {
 
@@ -83,5 +86,26 @@ public class PageObject implements Serializable {
 		this.totals = totalElements;
 		initPageNum();
 	}
+
+	public long getTotals() {
+		return totals;
+	}
+
+	public void setTotals(long totals) {
+		this.totals = totals;
+	}
+
+	public Map<String, Object> getExtInfo() {
+		return extInfo;
+	}
+
+	public void setExtInfo(Map<String, Object> extInfo) {
+		this.extInfo = extInfo;
+	}
+
+	public void setPageNum(int pageNum) {
+		this.pageNum = pageNum;
+	}
+	
 }
 

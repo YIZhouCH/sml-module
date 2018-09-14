@@ -123,21 +123,21 @@ public class SmlManageResource extends DelegatedSqlMarkupAbstractTemplate{
 	public Object invoke(@PathParam("bean")String bean,@PathParam("method")String invokeMethod,@PathParam("mark")String invokeMark,IHTTPSession session){
 		Object invokeBean=BeanHelper.getBean(bean);
 		if(invokeBean==null){
-			 return WebTools.buildResult(false,"bean["+mark+"] not exists!",null);
+			 return WebTools.buildResult(false,"bean["+invokeMark+"] not exists!",null);
 		}
 		try {
 			Method method=invokeBean.getClass().getMethod(invokeMethod,String.class,IHTTPSession.class);
 			Object obj=method.invoke(invokeBean,invokeMark,session);
 			return obj;
 		}catch (NoSuchMethodException e) {
-			return WebTools.buildResult(false,"["+mark+"."+invokeMethod+"] not exists!",null);
+			return WebTools.buildResult(false,"["+invokeMark+"."+invokeMethod+"] not exists!",null);
 		}catch(InvocationTargetException t){
 			Throwable e = t.getTargetException();// 获取目标异常  
 			t.printStackTrace();
-			return WebTools.buildResult(false,mark+"."+invokeMethod+" error["+e.getMessage()+"]",null);
+			return WebTools.buildResult(false,invokeMark+"."+invokeMethod+" error["+e.getMessage()+"]",null);
 		} catch (Throwable e) {
 			e.printStackTrace();
-			return WebTools.buildResult(false,mark+"."+invokeMethod+" error["+e.getMessage()+"]",e.getMessage());
+			return WebTools.buildResult(false,invokeMark+"."+invokeMethod+" error["+e.getMessage()+"]",e.getMessage());
 		} 
 	}
 	

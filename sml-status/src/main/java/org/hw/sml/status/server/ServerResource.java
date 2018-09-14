@@ -54,11 +54,15 @@ public class ServerResource {
 	public Object proxy(IHTTPSession session) throws ResponseException, Exception{
 		String uri=session.getUri().replace("/"+SystemHelper.getServerContextPath()+"/server/proxy/","");
 		String httpUrl=session.getParms().get("realUrl");
+		List<String> urlHttp=MapUtils.newArrayList();
 		String serverContextPath=uri.split("/")[0];
-		if((httpUrl==null||httpUrl.length()==0))
-		       httpUrl=ProxyRouter.getProxyUrl(MapUtils.getInt(session.getParms(),"expires",65)*1000,sources, serverContextPath);
-		if(httpUrl==null){
+		if((httpUrl==null||httpUrl.length()==0)){
+			urlHttp=Arrays.asList(ProxyRouter.getProxyUrls(MapUtils.getInt(session.getParms(),"expires",65)*1000,sources, serverContextPath));
+		}
+		if(httpUrl.isEmpty()){
 			throw new NanoHTTPD.ResponseException(Status.NOT_FOUND,"source not found or expired!");
+		}else{
+			httpUrl=urlHttp.get(0);
 		}
 		String url=httpUrl+uri.substring(uri.indexOf("/"));
 		String method=session.getMethod().name();
@@ -74,6 +78,14 @@ public class ServerResource {
 			 if(postData!=null){
 				 https.body(postData);
 			 }
+		}
+		if(urlHttp.size()>1){
+			List<Https.Failover> failovers=MapUtils.newArrayList();
+			for(String uh:urlHttp){
+				Https.Failover failover=new Https.Failover(uh+uri.substring(uri.indexOf("/")), MapUtils.getInt(session.getParms(),"retry",1), MapUtils.getInt(session.getParms(),"timewait",0));
+				failovers.add(failover);
+			}
+			https.failover(failovers.toArray(new Https.Failover[0]));
 		}
 		https.getParamer().param(session.getQueryParameterString());
 		List<String> blacklist=Arrays.asList(new String[]{"accept-encoding"});
