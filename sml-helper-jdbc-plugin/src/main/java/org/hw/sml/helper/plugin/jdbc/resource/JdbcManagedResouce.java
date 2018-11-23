@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,7 @@ import org.hw.sml.support.SmlAppContextUtils;
 import org.hw.sml.support.ioc.BeanHelper;
 import org.hw.sml.support.ioc.annotation.Bean;
 import org.hw.sml.support.ioc.annotation.Val;
+import org.hw.sml.tools.DateTools;
 import org.hw.sml.tools.MapUtils;
 
 @SmlResource("jdbc")
@@ -39,6 +41,7 @@ import org.hw.sml.tools.MapUtils;
 public class JdbcManagedResouce {
 	@Val(value="plugin.helper.jdbc.nullchar",required=false)
 	private String nullChar="<null>";
+	
 	@SmlResource("update")
 	public Object update(Map<String,String> params){
 		LoggerHelper.getLogger().debug(getClass(),String.format("update[%s]",params));
@@ -73,6 +76,8 @@ public class JdbcManagedResouce {
 			for(Map.Entry<String,Object> entry:data.entrySet()){
 				if(entry.getValue()==null){
 					data.put(entry.getKey(),nullChar);
+				}else if(entry.getValue() instanceof Date){
+					data.put(entry.getKey(),DateTools.sdf_mis().format((Date)entry.getValue()));
 				}
 			}
 		}

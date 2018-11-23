@@ -84,11 +84,16 @@ public class WebRouter extends Router{
 							getCurrentResponse().setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 							return;
 						}
-						params[i]=WebTools.fromJson(WebTools.getRequestBody(getCurrentRequest()),clazz);
+						if(CharSequence.class.isAssignableFrom(clazz)){
+							params[i]=WebTools.getRequestBody(getCurrentRequest());
+						}else{
+							params[i]=WebTools.fromJson(WebTools.getRequestBody(getCurrentRequest()),clazz);
+						}
+						//params[i]=WebTools.fromJson(WebTools.getRequestBody(getCurrentRequest()),clazz);
 					}
 				}
 				if(ats.length==0){
-					if(clazz.isAssignableFrom(CharSequence.class)){
+					if(CharSequence.class.isAssignableFrom(clazz)){
 						params[i]=WebTools.getRequestBody(getCurrentRequest());
 					}else{
 						params[i]=WebTools.fromJson(WebTools.getRequestBody(getCurrentRequest()),clazz);
@@ -124,4 +129,5 @@ public class WebRouter extends Router{
 		}
 		return v;
 	}
+	
 }

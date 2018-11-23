@@ -415,7 +415,7 @@ public class SvnUpload {
     //第二个参数多少周
     //第三个参数为null默认提交上一周，也可指定本地一个文件路径
     public static void main(String[] args) throws SVNException {
-      send("黄文",35,null);
+      send("黄文",37,null);
     }
 
 }

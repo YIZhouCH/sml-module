@@ -23,12 +23,13 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.hw.sml.component.RcptFastJsonMapper;
 import org.hw.sml.core.build.SmlTools;
 import org.hw.sml.manager.context.WebRouter;
-import org.hw.sml.server.NanoHTTPD;
+import org.hw.sml.queryplugin.JsonMapper;
+import org.hw.sml.support.ioc.BeanHelper;
 import org.hw.sml.tools.MapUtils;
 
 public class WebTools {
 	public static final String REDIRECT="redirect:";
-	public static final RcptFastJsonMapper jsonMapper=new RcptFastJsonMapper();
+	public static final JsonMapper jsonMapper=BeanHelper.getBean(JsonMapper.class)==null?new RcptFastJsonMapper():BeanHelper.getBean(JsonMapper.class);
 	/**
 	 * 输出到界面
 	 * @param response

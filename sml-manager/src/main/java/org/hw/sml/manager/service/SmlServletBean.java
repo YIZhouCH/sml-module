@@ -37,7 +37,7 @@ public class SmlServletBean implements ServiceBean{
 		 String method=request.getMethod();
 		 String uri=request.getPathInfo();
 		 uri.replaceAll("/{2,}","/");
-		 LoggerHelper.getLogger().debug(getClass(),String.format("sml request method[%s]-uri[%s]",method,request.getRequestURI()));
+		 LoggerHelper.getLogger().debug(getClass(),String.format("sml request method[%s]-uri[%s]-ip[%s]",method,request.getRequestURI(),WebTools.getRemoteIp(request)));
 		 String[] uris=WebTools.getUris(uri);
 		 //0开始
 		 if(uris.length<1){

@@ -1,22 +1,30 @@
 package org.hw.sml.net;
 
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipFile;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
-import org.hw.sml.component.RcptFastJsonMapper;
+import org.apache.commons.net.ftp.FTPFileFilter;
+import org.apache.commons.net.ftp.FTPReply;
 import org.hw.sml.tools.Assert;
 import org.hw.sml.tools.DateTools;
-import org.hw.sml.tools.IOUtils;
+import org.hw.sml.tools.Https;
 import org.hw.sml.tools.MapUtils;
 import org.hw.sml.tools.RegexUtils;
 import org.hw.sml.tools.Strings;
@@ -27,6 +35,7 @@ public class Ftps {
 	private Urls urls;
 	private FTPClient ftpClient;
 	private DirStrategy dirStrategy;
+	private String charset=System.getProperty("file.encoding");
 	private Ftps(){
 	}
 	private static Map<String,DirStrategy> dirStrategys=MapUtils.newHashMap();
@@ -52,7 +61,6 @@ public class Ftps {
 				ftpClient.enterLocalPassiveMode();
 			if(MapUtils.getBoolean(urls.getParams(),"pasv",false))
 				ftpClient.pasv();
-			ftpClient.setControlEncoding(MapUtils.getString(urls.getParams(),"controlEncoding","utf-8"));
 			if(urls.getParams().containsKey("dirStrategy"))
 				dirStrategy=dirStrategys.get(MapUtils.getString(urls.getParams(),"dirStrategy","default"));
 			if(urls.getParams().containsKey("controlKeepAliveTimeout"))
@@ -61,6 +69,12 @@ public class Ftps {
 				ftpClient.setConnectTimeout(MapUtils.getInt(urls.getParams(),"connectTimeout"));
 			if(urls.getParams().containsKey("controlKeepAliveReplyTimeout"))
 				ftpClient.setControlKeepAliveReplyTimeout(MapUtils.getInt(urls.getParams(),"controlKeepAliveReplyTimeout"));
+			if (FTPReply.isPositiveCompletion(ftpClient.sendCommand("OPTS UTF8", "ON"))) {// 开启服务器对UTF-8的支持，如果服务器支持就用UTF-8编码，否则就使用本地编码（GBK）.
+				charset = "UTF-8";
+			 }
+			ftpClient.setControlEncoding(MapUtils.getString(urls.getParams(),"controlEncoding",charset));
+			ftpClient.setCharset(Charset.forName(MapUtils.getString(urls.getParams(),"charset",charset)));
+			
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -106,6 +120,20 @@ public class Ftps {
 		}
 		return this;
 	}
+	public Ftps mkdir(String dirs){
+		try {
+			dirs=encoder(dirs);
+			String dirPreStr="";
+			for(String dir:dirs.split("/")){
+				dirPreStr+=dir+"/";
+				if(!dirPreStr.equals("/"))
+				ftpClient.makeDirectory(dirPreStr);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return this;
+	}
 	public FTPFile[] lsFtpFile(){
 		try {
 			return ftpClient.listFiles();
@@ -113,6 +141,29 @@ public class Ftps {
 			e.printStackTrace();
 		}
 		return new FTPFile[]{};
+	}
+	public FTPFile getFtpFile(){
+		return getFtpFile(getUrls().getPath());
+	}
+	public FTPFile getFtpFile(String filepath){
+		FTPFile[] ftpFiles=null;
+		String filename=encoder(filepath);
+		String dir=workingDirectory();
+		try {
+			if(filepath.contains("/")){
+				dir=filepath.substring(0,filepath.lastIndexOf("/"));
+				filename=filepath.substring(filepath.lastIndexOf("/")+1);
+			}
+			final String tmpFilename=filename;
+			ftpFiles=ftpClient.listFiles(dir,new FTPFileFilter(){
+					public boolean accept(FTPFile paramFTPFile) {
+						return paramFTPFile.getName().equals(tmpFilename);
+					}});
+			Assert.isTrue(ftpFiles.length>0,"path["+filepath+"] is not exists!");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return ftpFiles[0];
 	}
 	public String[] ls(){
 		try {
@@ -122,10 +173,34 @@ public class Ftps {
 		}
 		return new String[]{};
 	}
+	public List<String> lsCascade(String filepath){
+		return lsCascade(filepath,FileType.file);
+	}
+	public List<String> lsCascade(String filepath,FileType fileType){
+		List<String> result=MapUtils.newArrayList();
+		try {
+			FTPFile[] ftpFiles=ftpClient.listFiles(encoder(filepath));
+			for(FTPFile ftpFile:ftpFiles){
+				if(ftpFile.isFile()&&Arrays.asList(FileType.all,FileType.file).contains(fileType)){
+					result.add(filepath+"/"+ftpFile.getName());
+				}else if(ftpFile.isDirectory()&&Arrays.asList(FileType.all,FileType.dir).contains(fileType)){
+					result.add(filepath+"/"+ftpFile.getName());
+				}
+				if(ftpFile.isDirectory()){
+					List<String> tmp=lsCascade(filepath+"/"+ftpFile.getName(),fileType);
+					result.addAll(tmp);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 	public void get(OutputStream os) throws IOException{
 		 get(urls.getPath(), os);
 	}
 	public void get(String filepath,OutputStream os) throws IOException{
+		filepath=encoder(filepath);
 		String filename=filepath.substring(filepath.lastIndexOf("/")+1);
 		if(!filepath.equals(filename)){
 			cd(filepath.substring(0,filepath.lastIndexOf("/")));
@@ -138,6 +213,7 @@ public class Ftps {
 		return get(urls.getPath());
 	}
 	public InputStream get(String filepath) throws IOException{
+		filepath=encoder(filepath);
 		String filename=filepath.substring(filepath.lastIndexOf("/")+1);
 		if(!filepath.equals(filename)){
 			cd(filepath.substring(0,filepath.lastIndexOf("/")));
@@ -149,6 +225,7 @@ public class Ftps {
 		return ftpClient.retrieveFileStream(filename);
 	}
 	public void put(String filepath,InputStream is) throws IOException{
+		filepath=encoder(filepath);
 		String filename=filepath.substring(filepath.lastIndexOf("/")+1);
 		if(!filepath.equals(filename)){
 			cd(filepath.substring(0,filepath.lastIndexOf("/")));
@@ -160,6 +237,37 @@ public class Ftps {
 		String name = filename + ".temp";
 		ftpClient.storeFile(name, is);
 		ftpClient.rename(name,filename);
+		safeClose(is);
+	}
+	public String workingDirectory(){
+		try {
+			String dir=ftpClient.doCommandAsStrings("pwd","")[0];
+			return RegexUtils.matchGroup("\"(.*?)\"",dir).get(0).replace("\"","");
+		} catch (IOException e) {
+		    throw new RuntimeException(e.getMessage());
+		}
+	}
+	/**
+	 * 
+	 * @param localDirPath 本地目录
+	 * @param remoteDirPath 远程ftp目录最后一层跟本地最后一层同级可以一样，不一样为重命名
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
+	 */
+	public void putDir(String localDirPath,String remoteDirPath) throws FileNotFoundException, IOException{
+		mkdir(remoteDirPath);
+		String workDir=workingDirectory();
+		remoteDirPath=remoteDirPath.startsWith("/")?remoteDirPath:workDir+"/"+remoteDirPath;
+		List<String> localDirs=FileAccess.listNames(new File(localDirPath),FileType.dir);
+		cd(remoteDirPath);
+		for(String localDir:localDirs){
+			mkdir(localDir);
+		}
+		List<String> localFiles=FileAccess.listNames(new File(localDirPath),FileType.file);
+		for(String localFile:localFiles){
+			cd(remoteDirPath);
+			put(localFile,new FileInputStream(localDirPath+(localDirPath.equals("/")?"":"/")+localFile));
+		}
 	}
 	public void put(InputStream is) throws IOException{
 		put(urls.getPath(),is);
@@ -184,7 +292,29 @@ public class Ftps {
 	public void setUrls(Urls urls) {
 		this.urls = urls;
 	}
-	
+	public static void safeClose(Object close){
+		if(close!=null){
+			if(close instanceof Closeable){
+				try {
+					((Closeable) close).close();
+				} catch (IOException e) {
+				}
+			}else if(close instanceof ZipFile){
+				try {
+					((ZipFile)close).close();
+				} catch (IOException e) {
+				}
+			}
+		}
+	}
+	public  String encoder(String filepath){
+		try {
+			return new String(filepath.getBytes(charset),"iso-8859-1");
+		} catch (UnsupportedEncodingException e) {
+			return filepath;
+		}
+	}
+
 	public static interface DirStrategy{
 		public String[] getDir(String dir,Map<String,String> params);
 	}
@@ -202,9 +332,34 @@ public class Ftps {
 			}
 			return result.toArray(new String[]{});
 		}
-		
 	}
-	
+	public static enum FileType{
+		all,dir,file
+	}
+	public static class FileAccess{
+		public static List<File> list(File fileDir,FileType type){
+			List<File> lst=MapUtils.newArrayList();
+			for(File file:fileDir.listFiles()){
+				if(file.isFile()&&Arrays.asList(FileType.all,FileType.file).contains(type)){
+					lst.add(file);
+				}else if(file.isDirectory()&&Arrays.asList(FileType.all,FileType.dir).contains(type)){
+					lst.add(file);
+				}
+				if(file.isDirectory())
+					lst.addAll(list(file, type));
+			}
+			return lst;
+		}
+		public static List<String> listNames(File fileDir,FileType type) {
+			List<String> result=MapUtils.newArrayList();
+			List<File> files=Ftps.FileAccess.list(fileDir,type);
+			String dirPath=fileDir.getAbsolutePath();
+			for(File file:files){
+				result.add(file.getAbsolutePath().replace(dirPath,"").substring(1).replace("\\","/"));
+			}
+			return result;
+		}
+	}
 	public FTPClient getFtpClient() {
 		return ftpClient;
 	}
@@ -218,7 +373,8 @@ public class Ftps {
 		this.dirStrategy = dirStrategy;
 	}
 	public static void main(String[] args) throws IOException {
-		//Ftps ftps=Ftps.newFtps("ftp://ftpuser:Mk@83cka@10.221.240.7:21//opt/oss/server/var/fileint/monitor/pmmonitor_{yyyyMMdd}/hw_4g_(.*?).csv?dirStrategy=default").login();
+		//Ftps ftps=Ftps.newFtps("ftp://ftpuser:Mk@83cka@10.222.19.70:21//opt/oss/server/var/fileint/monitor/pmmonitor_{yyyyMMdd}/hw_4g_(.*?).csv?dirStrategy=default").login();
+		//ftps.get("/opt/oss/server/var/fileint/monitor/pmmonitor_20181104/hw_4g_20181104151500.csv",new FileOutputStream("d:/temp/hw_4g_201811041515-95.csv"));
 		/*Ftps ftps=Ftps.newFtps("ftp://test1:test,1@118.178.89.14:9333//networkspeed_(*).txt?dirStrategy=default").login();
 		//Ftps ftps=Ftps.newFtps("ftp://dongxin:Nokia123-@10.11.169.47:21//nokia_count_group6_ho_rate_201808191702.csv?pasv=true&localPassiveMode=false").login();
 		//System.out.println(new RcptFastJsonMapper().toJson(ftps.getUrls()));
@@ -235,5 +391,13 @@ public class Ftps {
 				System.out.println(e.getMessage());
 			}
 		}*/
+		Ftps ftps=Ftps.newFtps("ftp://smp:smp1234@192.168.1.234:21/upload/").login();
+		System.out.println(ftps.workingDirectory());
+		System.out.println(ftps.lsCascade("upload/material/aaa",FileType.file));
+		//Ftps.FileAccess.unzip(new File("d:/t.zip"), "d:/temp/");
+		//String url="http://10.221.247.50:8161/admin/queues.jsp";
+		//String result=Https.newGetHttps(url).basicAuth("admin:admin").execute();
+		//System.out.println(result);
+		System.out.println(Https.newGetHttps("https://192.168.1.234:8443/").registerTrust().execute());
 	}
 }

@@ -23,9 +23,22 @@ public class SmlHelperService extends RcptBaseService{
 		response.setContentType("text/html;charset=utf-8");
 		int result=0;
 		if(mark.equals("all")){
-			result=clear("");
+			result=0;
 		}else{
-			result=clear(mark);
+			CacheManager cm=SmlAppContextUtils.getSqlMarkupAbstractTemplate().getCacheManager();
+			String cacheStart=SqlMarkupAbstractTemplate.CACHE_PRE+":"+(mark.equals("all")?"":mark);
+			Map<String,Object> obj=cm.getKeyStart(cacheStart);
+			Map<String,Integer> caches=MapUtils.newLinkedHashMap();
+			for(String keyt:obj.keySet()){
+				String key=keyt.split(":")[1];
+				if(!caches.keySet().contains(key)){
+					caches.put(key,1);
+				}else{
+					caches.put(key, caches.get(key)+1);
+				}
+			}
+			for(String key:caches.keySet())
+			result+=clear(key);
 		}
 		response.getWriter().print("delete "+result+" success! <a href='../cache/all'>back</a>");
 	}
@@ -36,7 +49,7 @@ public class SmlHelperService extends RcptBaseService{
 		HtmlHelp ht=new HtmlHelp();
 		ht.append("sml cache manager",new String[]{"接口名","缓存数","操作"});
 		CacheManager cm=SmlAppContextUtils.getSqlMarkupAbstractTemplate().getCacheManager();
-		String cacheStart=SqlMarkupAbstractTemplate.CACHE_PRE+":";
+		String cacheStart=SqlMarkupAbstractTemplate.CACHE_PRE+":"+(mark.equals("all")?"":mark);
 		Map<String,Object> obj=cm.getKeyStart(cacheStart);
 		Map<String,Integer> caches=MapUtils.newLinkedHashMap();
 		for(String keyt:obj.keySet()){
@@ -51,7 +64,7 @@ public class SmlHelperService extends RcptBaseService{
 			if(mark.equals("all")||entry.getKey().contains(mark))
 			ht.append(new String[]{entry.getKey(),String.valueOf(entry.getValue()),"<a href='../clear/"+entry.getKey()+"'>清空</a>"});
 		}
-		ht.append("<br>本次缓存接口数:"+caches.size()+",<a href='../clear/all'>清空</a>");
+		ht.append("<br>本次缓存接口数:"+caches.size()+(mark.equals("all")?"":",<a href='../clear/"+mark+"'>清空</a>"));
 		ht.endInnerBody();
 		print.print(ht.toString());
 	}
