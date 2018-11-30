@@ -21,11 +21,7 @@ import org.hw.sml.tools.RegexUtils;
 
 public class WebRouter extends Router{	
 	private static ThreadLocal<HttpServletRequest> requests=new ThreadLocal<HttpServletRequest>();
-	
 	private static ThreadLocal<HttpServletResponse> responses=new ThreadLocal<HttpServletResponse>();
-	
-	
-
 	public static void set(HttpServletRequest request,HttpServletResponse response){
 		requests.set(request);
 		responses.set(response);
@@ -42,14 +38,16 @@ public class WebRouter extends Router{
 		responses.remove();
 	}
 	public static void doService(String requestMethod,String source) throws Throwable{
+		HttpServletRequest request=getCurrentRequest();
+		HttpServletResponse response=getCurrentResponse();
 		Source urlSource=checkPath(source);
 		if(urlSource==null){
-			getCurrentResponse().setStatus(HttpServletResponse.SC_NOT_FOUND);
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}
 		if(!urlSource.getRequestMethods().equals("")){
 			if(!urlSource.getRequestMethods().equalsIgnoreCase(requestMethod)){
-				getCurrentResponse().setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+				response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 				return;
 			}
 		}
@@ -63,9 +61,9 @@ public class WebRouter extends Router{
 			Class<?> clazz=clazzs[i];
 			Annotation[] ats=annotations[i];
 			if(clazz.isAssignableFrom(HttpServletRequest.class)){
-				params[i]=getCurrentRequest();
+				params[i]=request;
 			}else if(clazz.isAssignableFrom(HttpServletResponse.class)){
-				params[i]=getCurrentResponse();
+				params[i]=response;
 			}else{
 				Map<String,String> pathUrlParams=MapUtils.newHashMap();
 				String[] args=RegexUtils.matchSubString(paths[0], source);
@@ -81,22 +79,36 @@ public class WebRouter extends Router{
 						params[i]=ClassUtil.convertValueToRequiredType((pv==null?((Param)at).defaultValue():pv),clazz);
 					}else if(at.annotationType().isAssignableFrom(Body.class)){
 						if(method.equals(SmlResource.GET)){
-							getCurrentResponse().setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+							response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 							return;
 						}
 						if(CharSequence.class.isAssignableFrom(clazz)){
 							params[i]=WebTools.getRequestBody(getCurrentRequest());
 						}else{
-							params[i]=WebTools.fromJson(WebTools.getRequestBody(getCurrentRequest()),clazz);
+							try{
+								params[i]=WebTools.fromJson(WebTools.getRequestBody(request),clazz);
+							}catch(Exception e){
+								e.printStackTrace();
+								response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+								WebTools.print(response,e.getMessage());
+								return;
+							}
 						}
 						//params[i]=WebTools.fromJson(WebTools.getRequestBody(getCurrentRequest()),clazz);
 					}
 				}
 				if(ats.length==0){
 					if(CharSequence.class.isAssignableFrom(clazz)){
-						params[i]=WebTools.getRequestBody(getCurrentRequest());
+						params[i]=WebTools.getRequestBody(request);
 					}else{
-						params[i]=WebTools.fromJson(WebTools.getRequestBody(getCurrentRequest()),clazz);
+						try{
+							params[i]=WebTools.fromJson(WebTools.getRequestBody(request),clazz);
+						}catch(Exception e){
+							e.printStackTrace();
+							response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+							WebTools.print(response,e.getMessage());
+							return;
+						}
 					}
 				}
 				
@@ -107,14 +119,15 @@ public class WebRouter extends Router{
 			ResponseContext.setResponseBody(result);
 			if(result!=null){
 				if(result instanceof String&&result.toString().startsWith(WebTools.REDIRECT)){
-					getCurrentRequest().getRequestDispatcher(result.toString().replaceFirst(WebTools.REDIRECT,"")).forward(getCurrentRequest(), getCurrentResponse());
+					request.getRequestDispatcher(result.toString().replaceFirst(WebTools.REDIRECT,"")).forward(request,response);
 					return;
 				}
-				WebTools.print(getCurrentResponse(),result);
+				WebTools.print(response,result);
 			}
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
-			getCurrentResponse().setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			WebTools.print(response,e.getMessage());
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {

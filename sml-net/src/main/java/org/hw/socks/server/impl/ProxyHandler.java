@@ -388,30 +388,4 @@ public class ProxyHandler	implements	Runnable
 	public Socket getSocksServer() {
 		return m_ServerSocket;
 	}
-	private String getHost(byte type, InputStream in) throws IOException { 
-		String host = null; 
-		byte[] tmp = null; 
-		switch (type) { 
-		case 0x01:// IPV4协议 
-		tmp = new byte[4]; 
-		in.read(tmp); 
-		host = InetAddress.getByAddress(tmp).getHostAddress(); 
-		break; 
-		case 0x03:// 使用域名 
-		int l = in.read(); 
-		tmp = new byte[l]; 
-		in.read(tmp); 
-		host = new String(tmp); 
-		break; 
-		case 0x04:// 使用IPV6 
-		tmp = new byte[16]; 
-		in.read(tmp); 
-		host = InetAddress.getByAddress(tmp).getHostAddress(); 
-		break; 
-		default: 
-		break; 
-		} 
-		return host; 
-		} 
-	
 }

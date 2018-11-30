@@ -2,7 +2,7 @@ package org.hw.sml.net;
 
 import org.hw.socks.server.impl.ProxyServerInitiator;
 /**
- * bean-socks=--class=org.hw.sml.net --p-port=10012 --init-method=init
+ * bean-socks=--class=org.hw.sml.net --p-port=10012 --p-username=admin --p-password=admin --init-method=init
  * @author wen
  *
  */

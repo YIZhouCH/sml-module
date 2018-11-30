@@ -2,7 +2,6 @@ package org.hw.sml.redis;
 
 import org.hw.sml.redis.cluster.JedisClusterFactory;
 import org.hw.sml.redis.sentinel.JedisSentinelFactory;
-import org.hw.sml.support.LoggerHelper;
 import org.hw.sml.tools.Assert;
 import org.hw.sml.tools.Urls;
 
@@ -20,9 +19,14 @@ public class RedisTemplate {
 	private JedisPool jedisPool;
 	private JedisSentinelPool jedisSentinelPool;
 	private JedisCluster jedisCluster;
+	private String url;
 	public RedisTemplate(){
 	}
 	public RedisTemplate(String url){
+		this.url=url;
+		init();
+	}
+	public void init(){
 		Urls urls=new Urls(url);
 		if(urls.getParams().get("master")!=null){
 			this.jedisSentinelPool=JedisSentinelFactory.create(url);
@@ -97,6 +101,12 @@ public class RedisTemplate {
 	}
 	public RT getRt() {
 		return rt;
+	}
+	public String getUrl() {
+		return url;
+	}
+	public void setUrl(String url) {
+		this.url = url;
 	}
 	
 }	

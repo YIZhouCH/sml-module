@@ -92,9 +92,13 @@ public class WebTools {
 		if(param == null){
 			param = new HashMap<String,String>();
 		}
-		param.put("limit",request.getParameter("limit")==null?"15":request.getParameter("limit"));
-		param.put("pageNo",request.getParameter("page")==null?"1":request.getParameter("page"));
-		param.put("page",request.getParameter("page")==null?"1":request.getParameter("page"));
+		int limit=Integer.parseInt(request.getParameter("limit")==null?"15":request.getParameter("limit"));
+		int page=Integer.parseInt(request.getParameter("page")==null?"1":request.getParameter("page"));
+		param.put("pageNo",String.valueOf(page));
+		param.put("page",String.valueOf(page));
+		param.put("limit",String.valueOf(limit));
+		param.put("start",String.valueOf((page-1)*limit));
+		param.put("start_1",String.valueOf((page-1)*limit+1));
 		param.put("sord", request.getParameter("sord"));
 		if(request.getParameter("sidx")!=null&&request.getParameter("sidx").isEmpty()){
 			param.put("sidx", null);
